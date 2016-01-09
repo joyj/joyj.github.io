@@ -1,0 +1,56 @@
+pre {
+	;
+}
+
+#comments-input {
+	width: 90%;
+	border: 1px solid gray;	
+	background-color: #DFEEEB;
+}
+
+#board {
+	height: 350px;
+	/*overflow-x: hidden;
+	overflow-y: scroll; */
+	overflow: auto; /*scrollbox!*/
+	/*border-style: solid;
+	display: block;*/
+}
+
+#tableboard {
+	margin-left: 0;
+	border-collapse: collapse;
+	background-color: #E8F7F4; /*alternate: #DCE9E7 */
+}
+
+.onecomment {
+	border: 1px solid gray;
+}
+
+.tablename {
+	text-align: right;
+}
+
+.tabletime, .tablecomment, .tablesig {
+	vertical-align:text-top;
+	padding: 5px;
+}
+
+
+/* the discussion input form */
+#inputform {
+	overflow: hidden;
+}
+
+#message, #name, #submit, #messagebox, #namebox{
+	width: 100%;
+}
+
+#namebox {
+	text-align: right;
+	margin-left: 0;
+}
+
+#submitbutton {
+	float: right;
+}

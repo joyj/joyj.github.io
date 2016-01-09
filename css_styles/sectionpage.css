@@ -1,0 +1,122 @@
+/*Basic Patterns*/
+html {
+	height: 100%;
+}
+
+body {
+	background: #FAF6EA;
+	background: #EEEEEE;
+	font-family: tahoma, century gothic, sans-serif;
+	/*overflow: hidden; this will keep floating objects within current container*/
+}
+
+h1, h2, h3, h4, p, ul {
+	margin: 0;
+}
+
+p, table {
+    font-size: 1em;
+    margin-left: 15px;
+}
+
+table {
+	width: 100%;
+}
+
+a:link { color: #749AA9;}
+a:visited { color: #53B591;}
+a:hover { text-decoration: underline;}
+a:active  { color: #749AA9;}
+a { text-decoration: none;}
+
+/*Elements*/
+#info, #contact, #resources, #weekly, #announcements, #wall {
+	/*border-style: dotted;
+	border-color: red;*/
+	padding: 10px;
+	width: 90%;
+	margin-left: auto;
+	margin-right: auto;
+}
+
+/*Left Column */
+.left {
+	/*background-color: #4E6D75;*/
+	width: 40%;
+	float: left;
+}
+
+#upper-info {
+	background: black;
+	color: white;
+}
+#header {
+	padding: 10px;
+}
+
+/*Right Column */
+.right {
+	width: 60%;
+	float: left;
+}
+
+/*Specific Portions */
+#title {
+	font-size: 30pt;
+	color: #50AADE;
+	font-family: Franklin Gothic, century gothic, tahoma, sans-serif;
+}
+
+#name {
+	;
+}
+
+#section-number {
+	;
+}
+
+#discussion-title {
+	text-align: center;
+}
+
+
+#tipandchallenge {
+	overflow: hidden;
+}
+
+#tip, #challenge {	
+	text-align: center;
+	float: left;
+	width: 40%;
+	padding: 10px;
+	border-style: solid;
+	border-width: thin;
+	border-color: gray;
+	margin: 1%;
+}
+
+#tip {
+	background: #1EFAAD;
+}
+
+#challenge {
+	background: #45E4D4 /*#5BD4A9*/;
+}
+
+#history {
+	text-align: right;
+}
+
+#announcetable {
+	cellspacing: 10px;
+}
+
+#wall-note, #comments-input {
+	margin-left: 15px;
+}
+
+#footer {
+	color: black;
+	clear: both;
+	text-align: right;
+}

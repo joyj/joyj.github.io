@@ -1,0 +1,47 @@
+#main {
+	overflow: hidden;
+	
+}
+
+table {
+	margin-left: 0;
+	border-collapse: collapse;
+}
+
+td {
+	padding: 10px;
+	/*border-style: solid;
+	border-width: thin;
+	border-color: gray;*/
+}
+
+.space {
+	width: 25px;
+}
+
+#tip1, #challenge1 {
+	text-align: center;
+}
+
+.date, .tipcol, .challengecol {
+	/*overflow: hidden;*/
+	vertical-align: top;
+}
+
+.date {
+	font-weight: bold;
+}
+
+.question, .answer {
+	width: 50%;
+	float: left;
+}
+
+.answer {
+	color: gray;
+}
+
+#backtomain {
+	margin: 10px;
+}
+
