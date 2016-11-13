@@ -680,11 +680,11 @@ function genSeedString() {
 // Usually, the board is 5x5 and each cell belongs to either teamA, teamB,
 // neutral, or bomb (instant death).
 var cellOwner = {
-    TEAM_A: "teamA",
-    TEAM_B: "teamB",
-    NEUTRAL: "neutral",
-    BOMB: "bomb",
-    UNKNOWN: "unknown",
+    TEAM_A: "TEAM_A",
+    TEAM_B: "TEAM_B",
+    NEUTRAL: "NEUTRAL",
+    BOMB: "BOMB",
+    UNKNOWN: "UNKNOWN",
 };
 
 var teams = [cellOwner.TEAM_A, cellOwner.TEAM_B];
@@ -703,13 +703,14 @@ function getOtherTeam(team) {
 function genBoardOwners(firstTeam) {
     var firstTeam = firstTeam || getFirstTeam();
     var secondTeam = getOtherTeam(firstTeam);
+
     // Team that goes first always has 9, second team always has 8.
-    var numToAllocate = {
-        firstTeam: 9,
-        secondTeam: 8,
-    };
+    var numToAllocate = {};
+    numToAllocate[firstTeam] = 9;
+    numToAllocate[secondTeam] = 8;
     numToAllocate[cellOwner.BOMB] = 1;
     numToAllocate[cellOwner.NEUTRAL] = 7;
+
     var cells = [];
     _.each(numToAllocate, function(allocations, owner) {
         for (var i = 0; i < allocations; i++) {
