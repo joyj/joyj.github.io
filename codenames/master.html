@@ -1,0 +1,64 @@
+<html>
+  <head>
+
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <link rel="stylesheet" href="board.css">
+
+    <!-- jQuery -->
+    <script
+      src="https://code.jquery.com/jquery-3.1.1.min.js"
+      integrity="sha256-hVVnYaiADRTO2PzUGmuLJr8BLUSjGIZsDYGmIJLv2b8="
+      crossorigin="anonymous"></script>
+
+    <!-- Underscore -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.6.0/underscore.js" type="text/javascript"></script>
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+
+    <!-- Bootstrap theme -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css" integrity="sha384-rHyoN1iRsVXV4nD0JutlnGaslCJuC7uwjduW9SVrLvRYooPp2bWYgmgJQIXwl/Sp" crossorigin="anonymous">
+
+    <!-- Bootstrap JavaScript -->
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+  </head>
+
+  <body>
+    <div class="container">
+      <div class="page-header">
+        <h1>Codenames <small>Master view</small></h1>
+      </div>
+      <div class="center-block">
+        <div class="input-group">
+          <span class="input-group-btn">
+            <button class="btn btn-default" id="generate-board-btn" type="button">Generate board</button>
+          </span>
+        </div>
+        <p>Seed: <span id='seed'></span>
+        <p><span id='first-team' data-cell-type='UNKNOWN'>First team</span>
+      </div>
+    </div>
+
+    <div class="container center-block" id="board">
+    </div>
+  </body>
+
+  <script src="utils.js"></script>
+  <script src="master.js"></script>
+  <script>
+    $('#generate-board-btn').click(function() {
+      $('#board').empty();
+      var seed = genSeedString();
+      var wordList = genWords(seed);
+      generateBoard(wordList, 5);
+      $('#seed').text(seed);
+
+      var firstTeam = getFirstTeam();
+      var colorList = genBoardOwners(firstTeam);
+      populateColors(colorList);
+
+      $('#first-team').attr('data-cell-type', firstTeam);
+    });
+  </script>
+</html>

@@ -1,0 +1,62 @@
+#board {
+  min-width: 900px;
+}
+
+div.board-cell {
+  display: inline-block;
+  margin: 10px;
+  width: 150px;
+}
+
+div.board-cell button {
+  width: 100%;
+}
+
+.board-cell-menu a[data-cell-type="TEAM_A"] {
+  color:#00f;
+}
+
+.board-cell-menu a[data-cell-type="TEAM_B"] {
+  color:#f00;
+}
+
+.board-cell-menu a[data-cell-type="NEUTRAL"] {
+  color:#999;
+}
+
+.board-cell-menu a[data-cell-type="BOMB"] {
+  color:#000;
+}
+
+.board-cell button[data-cell-type="TEAM_A"] {
+  color:#00f;
+}
+
+.board-cell button[data-cell-type="TEAM_B"] {
+  color:#f00;
+}
+
+.board-cell button[data-cell-type="NEUTRAL"] {
+  color:#999;
+}
+
+.board-cell button[data-cell-type="BOMB"] {
+  color:#000;
+}
+
+[data-cell-type="TEAM_A"] {
+  color:#00f;
+}
+
+[data-cell-type="TEAM_B"] {
+  color:#f00;
+}
+
+[data-cell-type="NEUTRAL"] {
+  color:#999;
+}
+
+[data-cell-type="BOMB"] {
+  color:#000;
+}
+
