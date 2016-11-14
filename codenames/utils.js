@@ -667,6 +667,7 @@ function seededShuffle(seed, array) {
 // numWords is optional, default is 25.
 // allWords is an optional list of words to choose from.
 function genWords(seedStr, numWords, allWords) {
+    seedStr = seedStr.toLowerCase();
     numWords = numWords || 25;
     allWords = allWords || wordList;
     var wordsToReturn = [];
@@ -718,6 +719,7 @@ function getOtherTeam(team) {
 // firstTeam is optional, but determines which team goes first.
 function genBoardOwners(seedStr, firstTeam) {
     seedStr = seedStr || genSeedString();
+    seedStr = seedStr.toLowerCase();
     var firstTeam = firstTeam || getFirstTeam();
     var secondTeam = getOtherTeam(firstTeam);
 
