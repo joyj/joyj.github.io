@@ -1,0 +1,17 @@
+.center {
+    text-align: center;
+}
+
+.skinny {
+    width: 50%;
+}
+
+.large-text {
+    font-size: 25px;
+}
+
+#first-team, .score {
+  font-size: 15px;
+  font-weight: bold;
+}
+
