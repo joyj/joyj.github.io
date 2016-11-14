@@ -140,7 +140,6 @@ var wordList = [
     "CRUST",
     "CUFF",
     "CURTAIN",
-    "CUTICLE",
     "DAD",
     "DART",
     "DAWN",
@@ -502,7 +501,6 @@ var wordList = [
     "SHOWER",
     "SHRINK",
     "SICK",
-    "SIESTA",
     "SILHOUETTE",
     "SINGER",
     "SIP",
@@ -628,38 +626,54 @@ var wordList = [
     "ZOO",
 ]
 
-// Given a seedStr (seed that is a string), generate a list of words
-// from the master list.
+// From a seed, generate one number between min and max.
+function getRandom(seed, min, max) {
+    min = min || 0;
+    max = max || 1;
+
+    var curSeed = seed;
+    function genOne() {
+        var rnd = new Math.seedrandom(curSeed);
+        curSeed = rnd();
+        return min + curSeed * (max - min);
+    }
+    return genOne;
+}
+
+function seededShuffle(seed, array) {
+    var numToItem = {};
+    var nums = [];
+
+    var rand = getRandom(seed);
+    _.each(array, function(item) {
+        var randNum = rand();
+        while (randNum in numToItem) {
+            randNum = rand();  // Make sure all keys are unique.
+        }
+        numToItem[randNum] = item;
+        nums.push(randNum);
+    });
+
+    nums.sort();
+    var shuffledArray = [];
+    _.each(nums, function(num) {
+        shuffledArray.push(numToItem[num]);
+    });
+    return shuffledArray;
+}
+
+// Given a seedStr (seed that is a string, case insensitive), generate a list of
+// words from the master list.
 // numWords is optional, default is 25.
 // allWords is an optional list of words to choose from.
 function genWords(seedStr, numWords, allWords) {
     numWords = numWords || 25;
     allWords = allWords || wordList;
-    // From a seedNum (a number to use as a seed), generate one number between
-    // min and max.
-    function genOne(seedNum, min, max) {
-        min = min || 0;
-        max = max || 1;
-
-        seedNum = (seedNum * 9301 + 49297) % 233280;
-        var rnd = seedNum / 233280;
-
-        return min + rnd * (max - min);
-    }
-    function stringToNumber(s) {
-        totalNum = "";
-        for (var i = 0; i < s.length; i++) {
-            totalNum += s.charCodeAt(i);
-        }
-        return parseInt(totalNum);
-    }
     var wordsToReturn = [];
 
-    var start = stringToNumber(seedStr);
-
+    var randomIndex = getRandom(seedStr, 0, allWords.length - 1);
     for (var i = 0; i < numWords; i++) {
-        var curSeed = start + i;
-        var wordIndex = Math.floor(genOne(curSeed, 0, allWords.length - 1));
+        var wordIndex = Math.floor(randomIndex());
         wordsToReturn.push(allWords[wordIndex]);
     }
     return wordsToReturn;
@@ -688,8 +702,10 @@ var cellOwner = {
 };
 
 var teams = [cellOwner.TEAM_A, cellOwner.TEAM_B];
-function getFirstTeam() {
-    return teams[Math.floor(Math.random() * teams.length)];
+function getFirstTeam(seed) {
+    seed = seed || genSeedString();
+    var rand = getRandom(seed);
+    return teams[Math.floor(rand() * teams.length)];
 }
 function getOtherTeam(team) {
     if (team === teams[0]) {
@@ -698,9 +714,10 @@ function getOtherTeam(team) {
     return teams[0];
 }
 
-// Generate a random boardConfiguration.
+// Generate a random boardConfiguration based on a seed.
 // firstTeam is optional, but determines which team goes first.
-function genBoardOwners(firstTeam) {
+function genBoardOwners(seedStr, firstTeam) {
+    seedStr = seedStr || genSeedString();
     var firstTeam = firstTeam || getFirstTeam();
     var secondTeam = getOtherTeam(firstTeam);
 
@@ -717,5 +734,20 @@ function genBoardOwners(firstTeam) {
             cells.push(owner);
         }
     });
-    return _.shuffle(cells);
+    return seededShuffle(seedStr, cells);
+}
+
+
+// Given a seedStr (seed that is a string, case insensitive), generate a list of
+// objects {word: "word", owner: "owner"}.
+function genCompleteBoard(seedStr, firstTeam) {
+    seedStr = seedStr.toLowerCase();  // Make the seedStr case insensitive.
+    var words = genWords(seedStr);
+    var owners = genBoardOwners(firstTeam);
+
+    var cells = [];
+    for (var i = 0; i < owners.length; i++) {
+        cells.push({"word": words[i], "owner": owners[i]});
+    }
+    return cells;
 }

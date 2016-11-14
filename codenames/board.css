@@ -1,59 +1,61 @@
 #board {
-  min-width: 900px;
+  min-width: 950px;
 }
 
 div.board-cell {
   display: inline-block;
-  margin: 10px;
-  width: 150px;
+  margin: 5px;
+  width: 160px;
 }
 
 div.board-cell button {
   width: 100%;
+  height: 50px;
+  font-size: 15px;
+  font-family: Verdana;
+  border-width: 0px;
+  color: #fff;
 }
 
-.board-cell-menu a[data-cell-type="TEAM_A"] {
-  color:#00f;
+.modal-content {
+  font-size: 50px;
+  font-family: Verdana;
 }
 
-.board-cell-menu a[data-cell-type="TEAM_B"] {
-  color:#f00;
+.card.gray {
+  background-color:#999999;
 }
 
-.board-cell-menu a[data-cell-type="NEUTRAL"] {
-  color:#999;
+button[data-cell-type="TEAM_A"] {
+  background-color:#0099cc;
 }
 
-.board-cell-menu a[data-cell-type="BOMB"] {
-  color:#000;
+button[data-cell-type="TEAM_B"] {
+  background-color:#e60000;
 }
 
-.board-cell button[data-cell-type="TEAM_A"] {
-  color:#00f;
+button[data-cell-type="NEUTRAL"] {
+  background-color:#ffc34d;
 }
 
-.board-cell button[data-cell-type="TEAM_B"] {
-  color:#f00;
+button[data-cell-type="BOMB"] {
+  background-color:#000;
 }
 
-.board-cell button[data-cell-type="NEUTRAL"] {
-  color:#999;
-}
-
-.board-cell button[data-cell-type="BOMB"] {
-  color:#000;
+button[data-cell-type="UNKNOWN"] {
+  background-color:#999999;
 }
 
 [data-cell-type="TEAM_A"] {
-  color:#00f;
+  color:#0099cc;
 }
 
 [data-cell-type="TEAM_B"] {
-  color:#f00;
+  color:#e60000;
 }
 
 [data-cell-type="NEUTRAL"] {
-  color:#999;
+  color:#ffc34d;
 }
 
 [data-cell-type="BOMB"] {

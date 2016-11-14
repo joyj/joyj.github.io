@@ -3,16 +3,15 @@
 
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
-    <link rel="stylesheet" href="board.css">
-
     <!-- jQuery -->
     <script
       src="https://code.jquery.com/jquery-3.1.1.min.js"
       integrity="sha256-hVVnYaiADRTO2PzUGmuLJr8BLUSjGIZsDYGmIJLv2b8="
       crossorigin="anonymous"></script>
 
-    <!-- Underscore -->
+    <!-- Libraries -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.6.0/underscore.js" type="text/javascript"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/seedrandom/2.3.10/seedrandom.min.js" type="text/javascript"></script>
 
     <!-- Bootstrap CSS -->
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
@@ -22,43 +21,47 @@
 
     <!-- Bootstrap JavaScript -->
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+
+    <!-- Styles -->
+    <link rel="stylesheet" href="core.css">
+    <link rel="stylesheet" href="board.css">
   </head>
 
   <body>
     <div class="container">
       <div class="page-header">
-        <h1>Codenames <small>Master view</small></h1>
+          <h1>Codenames <small>Master view</small></h1>
       </div>
-      <div class="center-block">
-        <div class="input-group">
-          <span class="input-group-btn">
-            <button class="btn btn-default" id="generate-board-btn" type="button">Generate board</button>
-          </span>
+      <div class="text-right"><a href="player.html">To Player View</a></div>
+      <div class="row">
+        <div class="col-md-6 col-md-offset-3">
+          <div class="input-group">
+            <input type="text" class="form-control" id='seed' placeholder="Input seed here (case-insensitive)">
+            <span class="input-group-btn">
+              <button class="btn btn-default" id="generate-board-btn"
+                  type="button">Generate from input seed</button>
+            </span>
+            <span class="input-group-btn">
+              <button class="btn btn-default" id="random-board-btn" type="button">Random board</button>
+            </span>
+          </div>
         </div>
-        <p>Seed: <span id='seed'></span>
-        <p><span id='first-team' data-cell-type='UNKNOWN'>First team</span>
       </div>
-    </div>
+      <div class="row">
+          <div class="center" id='first-team' data-cell-type='UNKNOWN'><h3>First team</h3></div>
+      </div>
 
-    <div class="container center-block" id="board">
+      <div class="container center-block" id="board"></div>
+      <div class="container center-block" id="scores"></div>
     </div>
   </body>
 
   <script src="utils.js"></script>
-  <script src="master.js"></script>
+  <script src="board.js"></script>
   <script>
-    $('#generate-board-btn').click(function() {
-      $('#board').empty();
-      var seed = genSeedString();
-      var wordList = genWords(seed);
-      generateBoard(wordList, 5);
-      $('#seed').text(seed);
-
-      var firstTeam = getFirstTeam();
-      var colorList = genBoardOwners(firstTeam);
-      populateColors(colorList);
-
-      $('#first-team').attr('data-cell-type', firstTeam);
-    });
+    $('#gen-board').submit(function() {populateBoardFromInputSeed(false)});
+    $('#generate-board-btn').click(function() {populateBoardFromInputSeed(false)});
+    $('#random-board-btn').click(function() {populateBoard(false)});
+    populateBoard();
   </script>
 </html>
