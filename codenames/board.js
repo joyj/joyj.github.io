@@ -13,8 +13,21 @@ function populateBoardFromInputSeed(isPlayerView) {
   $('.card').click(function() {
       $(this).toggleClass("gray");
       displayUpdatedScores(isPlayerView);
-      if (isPlayerView && !$(this).hasClass("gray") && $(this).attr('data-cell-type') == cellOwner.BOMB) {
-          $('#you-lost').modal('show');
+      if (isPlayerView) {
+          if (!$(this).hasClass("gray")) {
+              if ($(this).attr('data-cell-type') == cellOwner.BOMB) {
+                  $('#you-lost').modal('show');
+              }
+              $(this).text("---");
+          } else {
+              $(this).text($(this).attr('word'));
+          }
+      } else {
+          if ($(this).hasClass("gray")) {
+              $(this).text("---");
+          } else {
+              $(this).text($(this).attr('word'));
+          }
       }
   });
   if (isPlayerView) {
@@ -48,7 +61,7 @@ var addRowToBoard = function() {
 var insertWordInLastRow = function(word, cellNum) {
   $('#board > div:last-child').append(
       '<div class="board-cell" id="cell' + cellNum + '">' +
-        '<button class="btn-lg card" type="button" data-cell-type="UNKNOWN">' +
+        '<button class="btn-lg card" type="button" data-cell-type="UNKNOWN" word="' + word + '">' +
         word +
         '</button>' +
       '</div>'

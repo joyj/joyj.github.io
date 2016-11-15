@@ -673,9 +673,14 @@ function genWords(seedStr, numWords, allWords) {
     var wordsToReturn = [];
 
     var randomIndex = getRandom(seedStr, 0, allWords.length - 1);
+    var wordIndex;
+    var word;
     for (var i = 0; i < numWords; i++) {
-        var wordIndex = Math.floor(randomIndex());
-        wordsToReturn.push(allWords[wordIndex]);
+        do {
+            wordIndex = Math.floor(randomIndex());
+            word = allWords[wordIndex];
+        } while (_.contains(wordsToReturn, word));
+        wordsToReturn.push(word);
     }
     return wordsToReturn;
 }
@@ -705,6 +710,7 @@ var cellOwner = {
 var teams = [cellOwner.TEAM_A, cellOwner.TEAM_B];
 function getFirstTeam(seed) {
     seed = seed || genSeedString();
+    seed = seed.toLowerCase();  // Make the seedStr case insensitive.
     var rand = getRandom(seed);
     return teams[Math.floor(rand() * teams.length)];
 }
@@ -720,7 +726,7 @@ function getOtherTeam(team) {
 function genBoardOwners(seedStr, firstTeam) {
     seedStr = seedStr || genSeedString();
     seedStr = seedStr.toLowerCase();
-    var firstTeam = firstTeam || getFirstTeam();
+    var firstTeam = firstTeam || getFirstTeam(seedStr);
     var secondTeam = getOtherTeam(firstTeam);
 
     // Team that goes first always has 9, second team always has 8.
