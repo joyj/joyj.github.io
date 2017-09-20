@@ -1,0 +1,20 @@
+.center {
+    text-align: center;
+}
+
+.skinny {
+    width: 80%;
+}
+
+.large-text {
+    font-size: 25px;
+}
+
+#first-team, .score {
+  font-size: 15px;
+  font-weight: bold;
+}
+
+.header-dropdown {
+  background-color: transparent;
+}
