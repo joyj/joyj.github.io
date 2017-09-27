@@ -54,7 +54,10 @@ function parseLineToLineInfo(line) {
             ingrInfo = known_ingredients[closestIngr];
             if ("aka" in ingrInfo) {
                 databaseIngredientName = ingrInfo["aka"];
-                ingrInfo = known_ingredients[databaseIngredientName];
+                if (databaseIngredientName in known_ingredients) {
+                    // TODO trigger error if not in known_ingredients
+                    ingrInfo = known_ingredients[databaseIngredientName];
+                }
             }
         }
     }
@@ -77,6 +80,7 @@ function tryToMatchIngredient(ingredient_tokens) {
     for (var start = 0; start < ingredient_tokens.length; start++) {
         for (var end = ingredient_tokens.length; end > start; end--) {
             ingredient = ingredient_tokens.slice(start, end).join(" ");
+
             if (ingredient in known_ingredients) {
                 return ingredient;
             }
@@ -140,9 +144,11 @@ function getDebugMessage(ingrInfoObj) {
     } else if (ingredient != parsedIngredient) {
         ingredient = parsedIngredient + " --> " + ingredient;
     }
+    var ingrInfo = ingrInfoObj["ingredient_info"];
     return "amount: " + amt
         + " <br/> unit: " + unit
-        + " <br/> ingredient: " + ingredient;
+        + " <br/> ingredient: " + ingredient
+        + " <br/> database ingredient entry: " + JSON.stringify(ingrInfo, null, 4);
 }
 
 function translateIngredient(translateTo) {

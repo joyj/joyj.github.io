@@ -63,7 +63,7 @@ var known_ingredients = {
         "fat": 1.2,
     },
     "flour" : {
-        "aka": "all-purpose flour",
+        "aka": "all purpose flour",
     },
     "sugar" : {
         "grams": 200,
