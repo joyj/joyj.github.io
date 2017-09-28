@@ -1,20 +1,42 @@
 function triggerTranslation() {
     var ingredients = $('#ingredients-input').val();
-    translateAndDisplayIngredients(ingredients);
+    var translationKeys = getTranslationKeys();
+    var linesOfIngredientInfo = getIngredients(ingredients);
+    var display = constructDisplay(linesOfIngredientInfo, translationKeys);
+    $("#ingredients-table .generated").remove();
+    $('#ingredients-table').append(display);
 };
 
-function translateAndDisplayIngredients(input) {
+function getTranslationKeys() {
+    var numHeaders = $("#ingredients-table-headers").children().length;
+    var translationKeys = [];
+    for (var i = 0; i < numHeaders; i++) {
+        var headerId = "#dLabel" + i;
+        var headerContents = $(headerId).text().trim();
+        if (headerContents in ingredientsColumnChoices) {
+            translationKeys.push(ingredientsColumnChoices[headerContents]);
+        } else {
+            translationKeys.push(null);
+        }
+    }
+    return translationKeys;
+}
+
+
+// Functions under here don't depend on the page state
+
+
+function getIngredients(input) {
     var inputLines = input.split("\n");
     var linesOfIngredientInfo = [];
     inputLines.forEach(function(line) {
-        linesOfIngredientInfo.push(parseLineToLineInfo(line));
+        linesOfIngredientInfo.push(parseLineToInfo(line));
     });
-    var display = constructDisplay(linesOfIngredientInfo);
-    $("#ingredients-table .generated").remove();
-    $('#ingredients-table').append(display);
+    return linesOfIngredientInfo;
 }
 
-function parseLineToLineInfo(line) {
+// Note: used for testing
+function parseLineToInfo(line) {
     var tokens = line.split(/\s+/);  // any number of whitespace
 
     // find token that is a measurement, can have s at end
@@ -27,18 +49,24 @@ function parseLineToLineInfo(line) {
 
         // normalize token and check if we know about it
         // TODO measurement can be multiple tokens if fluid ounces
-        var normalizedToken = token.toLowerCase();
+        var normalizedToken = token;
         if (normalizedToken[normalizedToken.length - 1] == "s") {
             normalizedToken = normalizedToken.substring(0, normalizedToken.length - 1);
         }
-        if (normalizedToken in volume_conversions) {
-            token = normalizedToken;
-        }
+        var recognizedUnit = null;
         // handle the case when token matches but normalized doesn't.
         // E.g. when T is used for tablespoon
-        if (token in volume_conversions) {
+        if (normalizedToken in volume_conversions) {
+            recognizedUnit = normalizedToken;
+        } else {
+            normalizedToken = normalizedToken.toLowerCase();
+            if (normalizedToken in volume_conversions) {
+                recognizedUnit = normalizedToken;
+            }
+        }
+        if (recognizedUnit != null) {
             measure_amt = tokens.slice(0, i);
-            measurement_unit = normalizedToken;
+            measurement_unit = recognizedUnit;
             ingredient = tokens.slice(i + 1, tokens.length);
         }
     }
@@ -80,9 +108,10 @@ function tryToMatchIngredient(ingredient_tokens) {
     for (var start = 0; start < ingredient_tokens.length; start++) {
         for (var end = ingredient_tokens.length; end > start; end--) {
             ingredient = ingredient_tokens.slice(start, end).join(" ");
+            normalizedIngredient = ingredient.toLowerCase();
 
-            if (ingredient in known_ingredients) {
-                return ingredient;
+            if (normalizedIngredient in known_ingredients) {
+                return normalizedIngredient;
             }
         }
     }
@@ -123,6 +152,7 @@ function tryToTranslateAmt(amtTokens) {
     return eval_amt;
 }
 
+// Note: used for testing
 function getDebugMessage(ingrInfoObj) {
     if (ingrInfoObj == null) {
         return "Could not parse line into amt + unit + ingredient";
@@ -151,84 +181,66 @@ function getDebugMessage(ingrInfoObj) {
         + " <br/> database ingredient entry: " + JSON.stringify(ingrInfo, null, 4);
 }
 
-function translateIngredient(translateTo) {
-    function translate(ingrInfoObj) {
-        if (ingrInfoObj == null) {
-            return null;
-        }
-        var amt = ingrInfoObj["measure_amt"];
-        var unit = ingrInfoObj["unit"];
-        var ingredient = ingrInfoObj["ingredientName"];
-        var parsedIngredient = ingrInfoObj["parsedIngredientName"];
-        var original_line = ingrInfoObj["original_line"];
-        var ingrInfo = ingrInfoObj["ingredient_info"];
+// Note: used for testing
+function translateIngredient(ingrInfoObj, translateTo) {
+    if (ingrInfoObj == null) {
+        return null;
+    }
+    var amt = ingrInfoObj["measure_amt"];
+    var unit = ingrInfoObj["unit"];
+    var ingredient = ingrInfoObj["ingredientName"];
+    var parsedIngredient = ingrInfoObj["parsedIngredientName"];
+    var original_line = ingrInfoObj["original_line"];
+    var ingrInfo = ingrInfoObj["ingredient_info"];
 
-        var mL = null;
-        if (unit in volume_conversions) {
-            mL = amt * volume_conversions[unit];
-        }
-        if (mL != null) {
-            if (translateTo == "ingredient") {
-                return parsedIngredient;
-            }
-            if (translateTo == "grams") {
-                var grams = round_decimal(mL * ingrInfo["grams"] / ingrInfo["mL"]);
-                return grams + "g " + ingredient;
-            }
-            if (translateTo == "mL") {
-                return round_decimal(mL) + "mL " + ingredient;
-            }
-            if (translateTo == "us_measures") {
-                return "not implemented yet :(";
-            }
-            if (translateTo == "original_line") {
-                return original_line;
-            }
-            if (translateTo == "parsed_info") {
-                return getDebugMessage(ingrInfoObj);
-            }
-            if (translateTo == "hide_column") {
-                return "";
-            }
-        }
-        // Not able to translate
+    var mL = null;
+    if (unit in volume_conversions) {
+        mL = amt * volume_conversions[unit];
+    }
+    if (mL != null && ingrInfo != null) {
         if (translateTo == "ingredient") {
-            return original_line;
+            return parsedIngredient;
+        }
+        if (translateTo == "grams") {
+            var grams = round_decimal(mL * ingrInfo["grams"] / ingrInfo["mL"]);
+            return grams + "g " + ingredient;
+        }
+        if (translateTo == "mL") {
+            return round_decimal(mL) + "mL " + ingredient;
+        }
+        if (translateTo == "us_measures") {
+            return "not implemented yet :(";
         }
         if (translateTo == "original_line") {
-            return "not translated";
+            return original_line;
         }
-        return "";
-    }
-    return translate;
-}
-
-function getColumnFunctions() {
-    var numHeaders = $("#ingredients-table-headers").children().length;
-    var headerFuncs = [];
-    for (var i = 0; i < numHeaders; i++) {
-        var headerId = "#dLabel" + i;
-        var headerContents = $(headerId).text().trim();
-        if (headerContents in ingredientsColumnChoices) {
-            headerFuncs.push(ingredientsColumnChoices[headerContents]);
-        } else {
-            headerFuncs.push(function() {return "";});
+        if (translateTo == "parsed_info") {
+            return getDebugMessage(ingrInfoObj);
+        }
+        if (translateTo == "hide_column") {
+            return "";
         }
     }
-    return headerFuncs;
+    // Not able to translate
+    if (translateTo == "ingredient") {
+        return original_line;
+    }
+    if (translateTo == "original_line") {
+        return "not translated";
+    }
+    return "";
 }
 
-function constructDisplay(ingredientInfoLines) {
+function constructDisplay(ingredientInfoLines, translationKeys) {
     // TODO sanitize input before dumping into html
-    var columnFunctions = getColumnFunctions();
     var result = "";
     ingredientInfoLines.forEach(function(lineInfo) {
         var inputLine = lineInfo["original_line"];
         if (inputLine.match(/^\s*$/) == null) {
             // only generate table entry for non-empty input line
             var columns = "";
-            columnFunctions.forEach(function(func) {
-                columns += '<td>' + func(lineInfo) + '</td>'
+            translationKeys.forEach(function(key) {
+                columns += '<td>' + translateIngredient(lineInfo, key) + '</td>'
             });
             result += '<tr class="generated">' + columns + '</tr>';
         }
@@ -242,18 +254,18 @@ function round_decimal(value) {
 }
 
 var ingredientsColumnChoices = {
-    "Ingredient": translateIngredient("ingredient"),
-    "Mass (grams)": translateIngredient("grams"),
-    "Volume (mL)": translateIngredient("mL"),
-    "Volume (US measures)": translateIngredient("us_measures"),
-    "Original Line": translateIngredient("original_line"),
-    "Parsed Info": translateIngredient("parsed_info"),
-    "Choose one": translateIngredient("hide_column"),
+    "Ingredient": "ingredient",
+    "Mass (grams)": "grams",
+    "Volume (mL)": "mL",
+    "Volume (US measures)": "us_measures",
+    "Original Line": "original_line",
+    "Parsed Info": "parsed_info",
+    "Choose one": "hide_column",
 };
 
 function getDropdownDisplay() {
     var choices = "";
-    $.each(ingredientsColumnChoices, function(display, func) {
+    $.each(ingredientsColumnChoices, function(display, translateKey) {
         choices = choices
             + "<li><a href='#'>"
             + display

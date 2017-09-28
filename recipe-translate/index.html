@@ -131,7 +131,10 @@
   </body>
   <script src="ingredients_database.js"></script>
   <script src="utils.js"></script>
+  <script src="tests.js"></script>
   <script>
+    runTests();
+
     // Create dropdowns
     $('.ingredient-table-dropdown').html(getDropdownDisplay());
     $(".dropdown-menu li a").click(function(){

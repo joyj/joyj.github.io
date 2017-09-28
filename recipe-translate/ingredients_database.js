@@ -1,6 +1,6 @@
 var volume_conversions = {
     // US measure to mL
-    "cup" : 250,
+    "cup" : 240,
     "teaspoon": 5,
     "tsp": 5,
     "t": 5,
@@ -56,7 +56,7 @@ var known_ingredients = {
     },
     "all purpose flour" : {
         "grams": 125,
-        "mL": 250,
+        "mL": 240,
         "calories": 455,
         "protein": 13,
         "carbohydrates": 95,
@@ -67,7 +67,7 @@ var known_ingredients = {
     },
     "sugar" : {
         "grams": 200,
-        "mL": 250,
+        "mL": 240,
         "calories": 773,
         "fat": 0,
         "carbohydrates": 200,
@@ -75,7 +75,7 @@ var known_ingredients = {
     },
     "packed brown sugar" : {
         "grams": 220,
-        "mL": 250,
+        "mL": 240,
         "calories": 836,
         "fat": 0,
         "carbohydrates": 216,
@@ -133,7 +133,7 @@ var known_ingredients = {
     },
     "unsweetened soy milk" : {
         "grams": 243,
-        "mL": 250,
+        "mL": 240,
         "calories": 80,
         "fat": 4,
         "carbohydrates": 4,
@@ -144,7 +144,7 @@ var known_ingredients = {
     },
     "coconut milk" : {
         "grams": 240,
-        "mL": 250,
+        "mL": 240,
         "calories": 552,
         "fat": 57,
         "carbohydrates": 13,
@@ -152,7 +152,7 @@ var known_ingredients = {
     },
     "unsweetened almond milk" : {
         "grams": 240,
-        "mL": 250,
+        "mL": 240,
         "calories": 30,
         "fat": 2.5,
         "carbohydrates": 1,
@@ -163,7 +163,7 @@ var known_ingredients = {
     },
     "nonfat milk" : {
         "grams": 245,
-        "mL": 250,
+        "mL": 240,
         "calories": 83,
         "fat": 0.2,
         "carbohydrates": 12,
@@ -174,7 +174,7 @@ var known_ingredients = {
     },
     "2% milk" : {
         "grams": 246,
-        "mL": 250,
+        "mL": 240,
         "calories": 124,
         "fat": 4.9,
         "carbohydrates": 12,
@@ -209,7 +209,7 @@ var known_ingredients = {
     },
     "dried cranberries" : {
         "grams": 40,
-        "mL": 250 / 3,
+        "mL": 240 / 3,
         "calories": 123,
         "fat": 0.5,
         "carbohydrates": 33,
@@ -271,7 +271,7 @@ var known_ingredients = {
     },
     "black beans" : {
         "grams": 184,
-        "mL": 250,
+        "mL": 240,
         "calories": 624,
         "fat": 1.7,
         "carbohydrates": 116,
@@ -287,7 +287,7 @@ var known_ingredients = {
     },
     "unsweetened applesauce" : {
         "grams": 246,
-        "mL": 250,
+        "mL": 240,
         "calories": 166,
         "fat": 0.4,
         "carbohydrates": 43,
