@@ -1,0 +1,7 @@
+Paste recipe in text box.
+Use ### at the start of a line if you want the translator to ignore it.
+Use ===== to separate the ingredients from the instructions.
+
+You can change the ingredients in the recipe to be ones that you'll actually
+use. For example, change "1 cup 2% milk" to "1 cup soy milk" if you're making
+that substitution.
