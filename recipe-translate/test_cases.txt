@@ -1,76 +1,98 @@
 # basic functions
 1 cup flour
+    multiplier 1.0
     ingredient     | flour
     grams          | 125g all purpose flour
     mL             | 240mL all purpose flour
     us_measures    | 1 cup flour
 1 cup unrecognized type of flour
+    multiplier 1.0
     ingredient     | flour
     grams          | 125g all purpose flour
     mL             | 240mL all purpose flour
     us_measures    | 1 cup flour
 1 cup Flour
+    multiplier 1.0
     ingredient     | flour
     grams          | 125g all purpose flour
     mL             | 240mL all purpose flour
     us_measures    | 1 cup flour
 2 cups flour
+    multiplier 1.0
     ingredient     | flour
     grams          | 250g all purpose flour
     mL             | 480mL all purpose flour
     us_measures    | 2 cups flour
 1 cup water
+    multiplier 1.0
     ingredient     | water
     grams          | 240g water
     mL             | 240mL water
     us_measures    | 1 cup water
 1 cup water or milk
+    multiplier 1.0
     ingredient     | water
     grams          | 240g water
     mL             | 240mL water
     us_measures    | 1 cup water
 1 cup water or 2 cups milk
+    multiplier 1.0
     ingredient     | water
     grams          | 240g water
     mL             | 240mL water
     us_measures    | 1 cup water
 1 1/2 cup water
+    multiplier 1.0
     ingredient     | water
     grams          | 360g water
     mL             | 360mL water
     us_measures    | 1 1/2 cup water
 unable to parse line into sections
+    multiplier 1.0
     ingredient     | unable to parse line into sections
     grams          | 
     mL             | 
     us_measures    | 
-    original line  | not translated
+    original_line  | not translated
+1 cup water
+    multiplier 2.0
+    ingredient     | water
+    grams          | 480g water
+    mL             | 480mL water
+    us_measures    | 2 cups water
 
 # difficult cases
 1 cup unknown ingredient
+    multiplier 1.0
     ingredient     | 1 cup unknown ingredient
     grams          | 
     mL             | 
     us_measures    | 1 cup unknown ingredient
-    original line  | not translated
+    original_line  | not translated
 100 grams unknown ingredient
+    multiplier 1.0
     ingredient     | 100 grams unknown ingredient
     grams          | 100 grams unknown ingredient
     mL             | 
     us_measures    |
-    original line  | not translated
+    original_line  | not translated
 1-2 cups water
+    multiplier 1.0
     ingredient     | water
     grams          | 240-480g water
     mL             | 240-480mL water
     us_measures    | 1-2 cups water
 1 cup to 2 cups water
+    multiplier 1.0
     ingredient     | water
     grams          | 240-480g water
     mL             | 240-480mL water
     us_measures    | 1-2 cups water
 1 to 2 cups water
+    multiplier 1.0
     ingredient     | water
     grams          | 240-480g water
     mL             | 240-480mL water
     us_measures    | 1-2 cups water
+
+# end of file: this line should trigger the last test

@@ -36,10 +36,13 @@
         <div class="center">
             <textarea class="form-control" id='ingredients-input' rows=5
                 placeholder="Paste ingredients here"></textarea>
-            <span class="input-group-btn">
+            <div class="control-panel">
+                <label id="multiplerSelect">Multipler</label>
+                <input class="span2" id="multiplier-input" size="8" type="text"
+                    placeholder="1.0">
               <button class="btn btn-default" id="translate-btn"
                   type="button">Translate</button>
-            </span>
+            </div>
             <div id='translated-ingredients'>
                 <table id='ingredients-table' class="table table-striped">
                     <tr id='ingredients-table-headers'>
@@ -135,6 +138,8 @@
   <script>
     runTests();
 
+    // TODO Add instructions from instructions.txt
+
     // Create dropdowns
     $('.ingredient-table-dropdown').html(getDropdownDisplay());
     $(".dropdown-menu li a").click(function(){
@@ -146,5 +151,11 @@
 
     // Define translate button actions
     $('#translate-btn').click(triggerTranslation);
+
+    // Populate default example recipe text
+    jQuery.get('/recipe-translate/default_input.txt', function(data) {
+        $('#ingredients-input').html(data);
+        triggerTranslation();
+    });
   </script>
 </html>

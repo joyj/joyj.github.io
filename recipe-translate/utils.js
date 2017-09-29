@@ -1,8 +1,12 @@
 function triggerTranslation() {
     var ingredients = $('#ingredients-input').val();
+    var multiplier = $('#multiplier-input').val();
+    if (multiplier == null || multiplier == "") {
+        multiplier = 1;
+    }
     var translationKeys = getTranslationKeys();
     var linesOfIngredientInfo = getIngredients(ingredients);
-    var display = constructDisplay(linesOfIngredientInfo, translationKeys);
+    var display = constructDisplay(linesOfIngredientInfo, translationKeys, multiplier);
     $("#ingredients-table .generated").remove();
     $('#ingredients-table').append(display);
 };
@@ -182,7 +186,7 @@ function getDebugMessage(ingrInfoObj) {
 }
 
 // Note: used for testing
-function translateIngredient(ingrInfoObj, translateTo) {
+function translateIngredient(ingrInfoObj, translateTo, multiplier) {
     if (ingrInfoObj == null) {
         return null;
     }
@@ -195,7 +199,7 @@ function translateIngredient(ingrInfoObj, translateTo) {
 
     var mL = null;
     if (unit in volume_conversions) {
-        mL = amt * volume_conversions[unit];
+        mL = amt * volume_conversions[unit] * eval(multiplier);
     }
     if (mL != null && ingrInfo != null) {
         if (translateTo == "ingredient") {
@@ -231,16 +235,16 @@ function translateIngredient(ingrInfoObj, translateTo) {
     return "";
 }
 
-function constructDisplay(ingredientInfoLines, translationKeys) {
+function constructDisplay(ingredientInfoLines, translationKeys, multiplier) {
     // TODO sanitize input before dumping into html
     var result = "";
     ingredientInfoLines.forEach(function(lineInfo) {
         var inputLine = lineInfo["original_line"];
-        if (inputLine.match(/^\s*$/) == null) {
+        if (inputLine.match(/^\s*$/) == null && !inputLine.startsWith("###")) {
             // only generate table entry for non-empty input line
             var columns = "";
             translationKeys.forEach(function(key) {
-                columns += '<td>' + translateIngredient(lineInfo, key) + '</td>'
+                columns += '<td>' + translateIngredient(lineInfo, key, multiplier) + '</td>'
             });
             result += '<tr class="generated">' + columns + '</tr>';
         }

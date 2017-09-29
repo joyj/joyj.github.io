@@ -8,13 +8,20 @@ function runTests() {
             if (line.length == 0) {
                 return;
             }
-            if (line[0] == "#") {
-                currentTestCategory = line.substring(1, line.length).trim();
-            } else if (line[0] != " ") {
-                if (currentTestCase != null) {
-                    runTestCase(currentTestCase, currentTestCategory);
+            if (line[0] != " ") {
+                // it is ok to call runTestCase on something with just input
+                // because there is nothing to test
+                runTestCase(currentTestCase, currentTestCategory);
+                currentTestCase = null;
+                if (line[0] == "#") {
+                    currentTestCategory = line.substring(1, line.length).trim();
+                } else {
+                    currentTestCase = {"input": line}
                 }
-                currentTestCase = {"input": line};
+            } else if (line.trim().startsWith("multiplier")) {
+                line = line.trim();
+                var num = line.substring("multiplier".length + 1, line.length);
+                currentTestCase["multiplier"] = num;
             } else {
                 var splitIndex = line.indexOf("|");
                 var translateKey = line.substring(0, splitIndex).trim();
@@ -22,7 +29,6 @@ function runTests() {
                 currentTestCase[translateKey] = expectedVal;
             }
         });
-        runTestCase(currentTestCase, currentTestCategory);
         console.log("-------Finished running tests.");
     });
 }
@@ -37,11 +43,15 @@ function shouldOutputTestResult(testCategory) {
 
 // TODO also run for parsed_info, hide_column, and original_line
 function runTestCase(testCase, testCategory) {
+    if (testCase == null) {
+        return;
+    }
     // should only have output if failed
     var input = testCase["input"];
     if (!("original_line" in testCase)) {
         testCase["original_line"] = input;
     }
+    var multiplier = testCase["multiplier"];
     testCase["hide_column"] = "";
     testCase["us_measures"] = "not implemented yet :(";  // TODO
 
@@ -56,7 +66,7 @@ function runTestCase(testCase, testCategory) {
         "parsed_info",
     ]
     translationKeys.forEach(function(key) {
-        var output = translateIngredient(ingredientInfo, key);
+        var output = translateIngredient(ingredientInfo, key, multiplier);
         // run for parsed_info but don't check the output
         if (key != "parsed_info") {
             var expectedOutput = testCase[key];
