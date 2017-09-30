@@ -41,7 +41,13 @@ function getIngredients(input) {
 
 // Note: used for testing
 function parseLineToInfo(line) {
-    var tokens = line.split(/\s+/);  // any number of whitespace
+    var editedLine = line;
+    for (var i = 0; i < known_units.length; i++) {
+        // add padding around all units
+        var unit = known_units[i];
+        editedLine = editedLine.replace(new RegExp("(\\d+)" + unit, 'gi'), "$1 " + unit + " ");
+    }
+    var tokens = editedLine.split(/\s+/);  // any number of whitespace
 
     // find token that is a measurement, can have s at end
     // everything before is amt, after is ingredient
@@ -50,23 +56,29 @@ function parseLineToInfo(line) {
     var ingredient = null;
     for (var i = 0; i < tokens.length && measure_amt == null; i++) {
         var token = tokens[i];
+        var token2words = token + " " + tokens[i + 1];
 
         // normalize token and check if we know about it
         // TODO measurement can be multiple tokens if fluid ounces
         var normalizedToken = token;
+        var normalizedToken2words = token2words;
         if (normalizedToken[normalizedToken.length - 1] == "s") {
             normalizedToken = normalizedToken.substring(0, normalizedToken.length - 1);
+        }
+        if (normalizedToken2words[normalizedToken2words.length - 1] == "s") {
+            normalizedToken2words = normalizedToken2words.substring(0, normalizedToken2words.length - 1);
         }
         var recognizedUnit = null;
         // handle the case when token matches but normalized doesn't.
         // E.g. when T is used for tablespoon
-        if (normalizedToken in volume_conversions) {
+        if (known_units.includes(normalizedToken)) {
             recognizedUnit = normalizedToken;
-        } else {
-            normalizedToken = normalizedToken.toLowerCase();
-            if (normalizedToken in volume_conversions) {
-                recognizedUnit = normalizedToken;
-            }
+        } else if (known_units.includes(normalizedToken2words)) {
+            recognizedUnit = normalizedToken2words;
+        } else if (known_units.includes(normalizedToken.toLowerCase())) {
+            recognizedUnit = normalizedToken.toLowerCase();
+        } else if (known_units.includes(normalizedToken2words.toLowerCase())) {
+            recognizedUnit = normalizedToken2words.toLowerCase();
         }
         if (recognizedUnit != null) {
             measure_amt = tokens.slice(0, i);
@@ -120,17 +132,6 @@ function tryToMatchIngredient(ingredient_tokens) {
         }
     }
     return null;
-}
-
-function unpackIngredientInfo(ingrInfoObj) {
-    if (ingrInfoObj == null) {
-        return null;
-    }
-    var ingrInfo = ingrInfoObj["ingredient_info"];
-    var amt = ingrInfoObj["measure_amt"];
-    var unit = ingrInfoObj["unit"];
-    var ingredient = ingrInfoObj["ingredientName"];
-    var parsedIngredient = ingrInfoObj["parsedIngredientName"];
 }
 
 function tryToTranslateAmt(amtTokens) {
@@ -197,46 +198,44 @@ function translateIngredient(ingrInfoObj, translateTo, multiplier) {
     var original_line = ingrInfoObj["original_line"];
     var ingrInfo = ingrInfoObj["ingredient_info"];
 
+    if (translateTo == "hide_column") {
+        return "";
+    }
+    if (translateTo == "parsed_info") {
+        return getDebugMessage(ingrInfoObj);
+    }
+    if (translateTo == "original_line") {
+        return original_line;
+    }
     var mL = null;
+    var grams = null;
     if (unit in volume_conversions) {
         mL = amt * volume_conversions[unit] * eval(multiplier);
+        if (ingrInfo != null) {
+            grams = mL * ingrInfo["grams"] / ingrInfo["mL"];
+        }
     }
-    if (mL != null && ingrInfo != null) {
-        if (translateTo == "ingredient") {
-            return parsedIngredient;
+    if (unit in mass_conversions) {
+        grams = amt * mass_conversions[unit] * eval(multiplier);
+        if (ingrInfo != null) {
+            mL = grams * ingrInfo["mL"] / ingrInfo["grams"];
         }
-        if (translateTo == "grams") {
-            var grams = round_decimal(mL * ingrInfo["grams"] / ingrInfo["mL"]);
-            return grams + "g " + ingredient;
-        }
-        if (translateTo == "mL") {
-            return round_decimal(mL) + "mL " + ingredient;
-        }
-        if (translateTo == "us_measures") {
-            return calculateUsMeasure(mL) + " " + ingredient;
-        }
-        if (translateTo == "original_line") {
-            return original_line;
-        }
-        if (translateTo == "parsed_info") {
-            return getDebugMessage(ingrInfoObj);
-        }
-        if (translateTo == "hide_column") {
-            return "";
-        }
+    }
+    if (translateTo == "ingredient" && parsedIngredient != null) {
+        return parsedIngredient;
+    }
+    if (translateTo == "grams" && grams != null) {
+        return round_decimal(grams) + "g " + ingredient;
+    }
+    if (translateTo == "mL" && mL != null) {
+        return round_decimal(mL) + "mL " + ingredient;
+    }
+    if (translateTo == "us_measures" && mL != null) {
+        return calculateUsMeasure(mL) + " " + ingredient;
     }
     // Not able to translate
     if (translateTo == "ingredient") {
         return original_line;
-    }
-    if (translateTo == "original_line") {
-        return "not translated";
-    }
-    if (translateTo == "parsed_info") {
-        if (ingrInfoObj == null) {
-            return "not able to parse line into amt + unit + ingredient";
-        }
-        return getDebugMessage(ingrInfoObj);
     }
     return "";
 }

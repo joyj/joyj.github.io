@@ -11,37 +11,67 @@
     grams          | 125g all purpose flour
     mL             | 240mL all purpose flour
     us_measures    | 1 cup all purpose flour
-1 cup Flour
+1 Cup Flour (capitalization)
     multiplier 1.0
     ingredient     | flour
     grams          | 125g all purpose flour
     mL             | 240mL all purpose flour
     us_measures    | 1 cup all purpose flour
-2 cups flour
+2 cups flour (non-1 cup, requires conversion)
     multiplier 1.0
     ingredient     | flour
     grams          | 250g all purpose flour
     mL             | 480mL all purpose flour
     us_measures    | 2 cups all purpose flour
-1 cup water
+1 cup water (water instead of flour)
     multiplier 1.0
     ingredient     | water
     grams          | 240g water
     mL             | 240mL water
     us_measures    | 1 cup water
-1 cup water or milk
+120 mL water (non-US, metric measure)
+    multiplier 1.0
+    ingredient     | water
+    grams          | 120g water
+    mL             | 120mL water
+    us_measures    | 1/2 cup water
+120mL water (non-US, metric measure, stuck to number)
+    multiplier 1.0
+    ingredient     | water
+    grams          | 120g water
+    mL             | 120mL water
+    us_measures    | 1/2 cup water
+120 g water (mass instead of volume)
+    multiplier 1.0
+    ingredient     | water
+    grams          | 120g water
+    mL             | 120mL water
+    us_measures    | 1/2 cup water
+120g water (mass instead of volume, stuck to number)
+    multiplier 1.0
+    ingredient     | water
+    grams          | 120g water
+    mL             | 120mL water
+    us_measures    | 1/2 cup water
+8 fl oz water (weight, 2 words for unit)
     multiplier 1.0
     ingredient     | water
     grams          | 240g water
     mL             | 240mL water
     us_measures    | 1 cup water
-1 cup water or 2 cups milk
+1 cup water or milk (2 ingredients on 1 line)
     multiplier 1.0
     ingredient     | water
     grams          | 240g water
     mL             | 240mL water
     us_measures    | 1 cup water
-1 1/2 cup water
+1 cup water or 2 cups milk (2 completely different measures)
+    multiplier 1.0
+    ingredient     | water
+    grams          | 240g water
+    mL             | 240mL water
+    us_measures    | 1 cup water
+1 1/2 cup water (number + fraction)
     multiplier 1.0
     ingredient     | water
     grams          | 360g water
@@ -53,26 +83,31 @@ unable to parse line into sections
     grams          | 
     mL             | 
     us_measures    | 
-    original_line  | not translated
-1 cup water
+1 cup water (multiplier)
     multiplier 2.0
     ingredient     | water
     grams          | 480g water
     mL             | 480mL water
     us_measures    | 2 cups water
-1 cup water
+1 cup water (fraction multiplier)
     multiplier 0.5
     ingredient     | water
     grams          | 120g water
     mL             | 120mL water
     us_measures    | 1/2 cup water
-1/8 tsp water
+1 cup water (fraction multiplier)
+    multiplier 1/2
+    ingredient     | water
+    grams          | 120g water
+    mL             | 120mL water
+    us_measures    | 1/2 cup water
+1/8 tsp water (fraction results in less than 1/8 tsp)
     multiplier 0.5
     ingredient     | water
     grams          | 0.31g water
     mL             | 0.31mL water
     us_measures    | 50% of 1/8 tsp water
-1/4 tsp water
+1/4 tsp water (half of 1/4 tsp)
     multiplier 0.5
     ingredient     | water
     grams          | 0.63g water
@@ -86,14 +121,12 @@ unable to parse line into sections
     grams          | 
     mL             | 
     us_measures    | 1 cup unknown ingredient
-    original_line  | not translated
 100 grams unknown ingredient
     multiplier 1.0
     ingredient     | 100 grams unknown ingredient
     grams          | 100 grams unknown ingredient
     mL             | 
     us_measures    |
-    original_line  | not translated
 1-2 cups water
     multiplier 1.0
     ingredient     | water

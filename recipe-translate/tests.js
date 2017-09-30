@@ -1,10 +1,11 @@
 function runTests() {
     console.log("-------Running tests.");
-    jQuery.get('/recipe-translate/test_cases.txt', function(data) {
+    jQuery.get('/recipe-translate/translation_test_cases.txt', function(data) {
         var inputLines = data.split("\n");
         var currentTestCase = null;
         var currentTestCategory = "";
-        var lineCount = -1;
+        var lineCount = 0;
+        var currentTestLineCount = null;
         inputLines.forEach(function(line) {
             lineCount++;
             if (line.length == 0) {
@@ -13,12 +14,13 @@ function runTests() {
             if (line[0] != " ") {
                 // it is ok to call runTestCase on something with just input
                 // because there is nothing to test
-                runTestCase(currentTestCase, lineCount, currentTestCategory);
+                runTestCase(currentTestCase, currentTestLineCount, currentTestCategory);
                 currentTestCase = null;
                 if (line[0] == "#") {
                     currentTestCategory = line.substring(1, line.length).trim();
                 } else {
                     currentTestCase = {"input": line}
+                    currentTestLineCount = lineCount;
                 }
             } else if (line.trim().startsWith("multiplier")) {
                 line = line.trim();
@@ -50,10 +52,7 @@ function runTestCase(testCase, lineCount, testCategory) {
     }
     // should only have output if failed
     var input = testCase["input"];
-    if (!("original_line" in testCase)) {
-        testCase["original_line"] = input;
-    }
-    var multiplier = testCase["multiplier"];
+    testCase["original_line"] = input;
     testCase["hide_column"] = "";
 
     var ingredientInfo = parseLineToInfo(input);
@@ -66,6 +65,7 @@ function runTestCase(testCase, lineCount, testCategory) {
         "hide_column",
         "parsed_info",
     ]
+    var multiplier = testCase["multiplier"];
     translationKeys.forEach(function(key) {
         var output = translateIngredient(ingredientInfo, key, multiplier);
         // run for parsed_info but don't check the output

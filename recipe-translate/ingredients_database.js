@@ -1,5 +1,7 @@
 var volume_conversions = {
     // US measure to mL
+    "ml": 1,
+    "mL": 1,
     "teaspoon": 5,
     "tsp": 5,
     "t": 5,
@@ -10,6 +12,16 @@ var volume_conversions = {
     "fl. oz." : 30,
     "fluid ounce" : 30,
     "cup" : 240,
+};
+
+var mass_conversions = {
+    // to g
+    "g": 1,
+    "gram": 1,
+    "oz" : 28.35,
+    "ounce" : 28.35,
+    "lb": 453.6,
+    "pound": 453.6,
 };
 
 var us_volume_lookup = [
@@ -41,14 +53,9 @@ var us_volume_lookup = [
     [400, "1 2/3 cup"],
 ];
 
-var mass_conversions = {
-    // to g
-    "oz" : 28.35,
-};
-
-var known_units = ["gram", "g", "mL"]
-    + volume_conversions.keys
-    + mass_conversions.keys;
+var known_units = [].concat(
+    Object.keys(volume_conversions),
+    Object.keys(mass_conversions));
 
 var fractions_conversion = {
     "\u00BC": " 1/4",
