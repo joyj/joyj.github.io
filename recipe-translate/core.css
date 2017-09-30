@@ -2,17 +2,23 @@
     text-align: center;
 }
 
+.padding {
+    padding-top: 10px;
+    padding-left: 3px;
+    padding-right: 3px;
+    padding-bottom: 10px;
+}
+
 .skinny {
     width: 80%;
 }
 
 .large-text {
-    font-size: 25px;
+    font-size: 20px;
 }
 
-#first-team, .score {
-  font-size: 15px;
-  font-weight: bold;
+.generated {
+    font-size: 14px;
 }
 
 .header-dropdown {

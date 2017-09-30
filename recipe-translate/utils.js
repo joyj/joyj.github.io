@@ -33,9 +33,14 @@ function getTranslationKeys() {
 function getIngredients(input) {
     var inputLines = input.split("\n");
     var linesOfIngredientInfo = [];
-    inputLines.forEach(function(line) {
-        linesOfIngredientInfo.push(parseLineToInfo(line));
-    });
+    for (var line of inputLines) {
+        if (line.startsWith("===")) {
+            break;
+        }
+        if (!line.startsWith("###")) {
+            linesOfIngredientInfo.push(parseLineToInfo(line));
+        }
+    }
     return linesOfIngredientInfo;
 }
 
@@ -56,12 +61,15 @@ function parseLineToInfo(line) {
     var ingredient = null;
     for (var i = 0; i < tokens.length && measure_amt == null; i++) {
         var token = tokens[i];
-        var token2words = token + " " + tokens[i + 1];
+        var tokenOf2words = "";
+        if (i + 1 < tokens.length) {
+            var tokenOf2words = token + " " + tokens[i + 1];
+        }
 
         // normalize token and check if we know about it
         // TODO measurement can be multiple tokens if fluid ounces
         var normalizedToken = token;
-        var normalizedToken2words = token2words;
+        var normalizedToken2words = tokenOf2words;
         if (normalizedToken[normalizedToken.length - 1] == "s") {
             normalizedToken = normalizedToken.substring(0, normalizedToken.length - 1);
         }
@@ -141,7 +149,7 @@ function tryToTranslateAmt(amtTokens) {
 
     // translate amt to decimal
     var eval_amt = 0;
-    amtTokens.forEach(function(num) {
+    for (var num of amtTokens) {
 
         $.each(fractions_conversion, function(frac_char, replacement) {
             num = num.replace(frac_char, replacement);
@@ -153,7 +161,7 @@ function tryToTranslateAmt(amtTokens) {
         } catch(err) {
             // do nothing for now
         }
-    });
+    }
     return eval_amt;
 }
 
@@ -280,17 +288,17 @@ function calculateUsMeasure(mL) {
 function constructDisplay(ingredientInfoLines, translationKeys, multiplier) {
     // TODO sanitize input before dumping into html
     var result = "";
-    ingredientInfoLines.forEach(function(lineInfo) {
+    for (var lineInfo of ingredientInfoLines) {
         var inputLine = lineInfo["original_line"];
         if (inputLine.match(/^\s*$/) == null && !inputLine.startsWith("###")) {
             // only generate table entry for non-empty input line
             var columns = "";
-            translationKeys.forEach(function(key) {
+            for (var key of translationKeys) {
                 columns += '<td>' + translateIngredient(lineInfo, key, multiplier) + '</td>'
-            });
+            }
             result += '<tr class="generated">' + columns + '</tr>';
         }
-    });
+    }
     return result;
 }
 

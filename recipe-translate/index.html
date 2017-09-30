@@ -33,102 +33,118 @@
       </div>
     </div>
     <div class="container">
-        <div class="center">
-            <textarea class="form-control" id='ingredients-input' rows=5
-                placeholder="Paste ingredients here"></textarea>
-            <div class="control-panel">
-                <label id="multiplerSelect">Multipler</label>
-                <input class="span2" id="multiplier-input" size="8" type="text"
-                    placeholder="1.0">
-              <button class="btn btn-default" id="translate-btn"
-                  type="button">Translate</button>
+        <div class="row">
+            <div class="col-md-8">
+                <textarea class="form-control" id='ingredients-input' rows=10
+                          placeholder="Paste ingredients here"></textarea>
             </div>
-            <div id='translated-ingredients'>
-                <table id='ingredients-table' class="table table-striped">
-                    <tr id='ingredients-table-headers'>
-                        <th>
-                            <div class="dropdown">
-                                <button id="dLabel0" 
-                                        class="header-dropdown btn btn-secondary dropdown-toggle"
-                                        type="button"
-                                        data-toggle="dropdown"
-                                        aria-haspopup="true"
-                                        aria-expanded="false">
-                                    Ingredient
-                                    <span class="caret"></span>
-                                </button>
-                                <ul class="ingredient-table-dropdown dropdown-menu"
-                                    aria-labelledby="dLabel0">
-                                </ul>
-                            </div>
-                        </th>
-                        <th>
-                            <div class="dropdown">
-                                <button id="dLabel1" 
-                                        class="header-dropdown btn btn-secondary dropdown-toggle"
-                                        type="button"
-                                        data-toggle="dropdown"
-                                        aria-haspopup="true"
-                                        aria-expanded="false">
-                                    Mass (grams)
-                                    <span class="caret"></span>
-                                </button>
-                                <ul class="ingredient-table-dropdown dropdown-menu"
-                                    aria-labelledby="dLabel1">
-                                </ul>
-                            </div>
-                        </th>
-                        <th>
-                            <div class="dropdown">
-                                <button id="dLabel2" 
-                                        class="header-dropdown btn btn-secondary dropdown-toggle"
-                                        type="button"
-                                        data-toggle="dropdown"
-                                        aria-haspopup="true"
-                                        aria-expanded="false">
-                                    Volume (US measures)
-                                    <span class="caret"></span>
-                                </button>
-                                <ul class="ingredient-table-dropdown dropdown-menu"
-                                    aria-labelledby="dLabel2">
-                                </ul>
-                            </div>
-                        </th>
-                        <th>
-                            <div class="dropdown">
-                                <button id="dLabel3" 
-                                        class="header-dropdown btn btn-secondary dropdown-toggle"
-                                        type="button"
-                                        data-toggle="dropdown"
-                                        aria-haspopup="true"
-                                        aria-expanded="false">
-                                    Original Line
-                                    <span class="caret"></span>
-                                </button>
-                                <ul class="ingredient-table-dropdown dropdown-menu"
-                                    aria-labelledby="dLabel3">
-                                </ul>
-                            </div>
-                        </th>
-                        <th>
-                            <div class="dropdown">
-                                <button id="dLabel4" 
-                                        class="header-dropdown btn btn-secondary dropdown-toggle"
-                                        type="button"
-                                        data-toggle="dropdown"
-                                        aria-haspopup="true"
-                                        aria-expanded="false">
-                                    Parsed Info
-                                    <span class="caret"></span>
-                                </button>
-                                <ul class="ingredient-table-dropdown dropdown-menu"
-                                    aria-labelledby="dLabel4">
-                                </ul>
-                            </div>
-                        </th>
-                    </tr>
-                </table>
+            <div class="col-md-4">
+                <p class="large-text">Advice</p>
+                <ul>
+                    <li>Paste recipe in input box</li>
+                    <li>Lines that start with ### will be ignored</li>
+                    <li>Separate ingredients from instructions using ===</li>
+                    <li>Edit the ingredients to your substitutions to get more
+                        accurate translation and nutrition info (e.g. edit 2% milk to soy milk).</li>
+                </ul>
+                <p>I recommend using a scale (TODO link) to measure ingredients since it
+                is more accurate and saves time washing the dishes! [TODO Read
+                about my kitchen setup for more details.]
+                </p>
             </div>
+        </div>
+        <div class="control-panel padding">
+            <span>Multipler</span>
+            <input class="span2" id="multiplier-input" size="8" type="text"
+                placeholder="1.0">
+          <button class="btn btn-default" id="translate-btn"
+              type="button">Translate</button>
+        </div>
+        <div id='translated-ingredients'>
+            <table id='ingredients-table' class="table table-striped">
+                <tr id='ingredients-table-headers'>
+                    <th>
+                        <div class="dropdown">
+                            <button id="dLabel0" 
+                                    class="header-dropdown btn btn-secondary dropdown-toggle"
+                                    type="button"
+                                    data-toggle="dropdown"
+                                    aria-haspopup="true"
+                                    aria-expanded="false">
+                                Ingredient
+                                <span class="caret"></span>
+                            </button>
+                            <ul class="ingredient-table-dropdown dropdown-menu"
+                                aria-labelledby="dLabel0">
+                            </ul>
+                        </div>
+                    </th>
+                    <th>
+                        <div class="dropdown">
+                            <button id="dLabel1" 
+                                    class="header-dropdown btn btn-secondary dropdown-toggle"
+                                    type="button"
+                                    data-toggle="dropdown"
+                                    aria-haspopup="true"
+                                    aria-expanded="false">
+                                Mass (grams)
+                                <span class="caret"></span>
+                            </button>
+                            <ul class="ingredient-table-dropdown dropdown-menu"
+                                aria-labelledby="dLabel1">
+                            </ul>
+                        </div>
+                    </th>
+                    <th>
+                        <div class="dropdown">
+                            <button id="dLabel2" 
+                                    class="header-dropdown btn btn-secondary dropdown-toggle"
+                                    type="button"
+                                    data-toggle="dropdown"
+                                    aria-haspopup="true"
+                                    aria-expanded="false">
+                                Volume (US measures)
+                                <span class="caret"></span>
+                            </button>
+                            <ul class="ingredient-table-dropdown dropdown-menu"
+                                aria-labelledby="dLabel2">
+                            </ul>
+                        </div>
+                    </th>
+                    <th>
+                        <div class="dropdown">
+                            <button id="dLabel3" 
+                                    class="header-dropdown btn btn-secondary dropdown-toggle"
+                                    type="button"
+                                    data-toggle="dropdown"
+                                    aria-haspopup="true"
+                                    aria-expanded="false">
+                                Original Line
+                                <span class="caret"></span>
+                            </button>
+                            <ul class="ingredient-table-dropdown dropdown-menu"
+                                aria-labelledby="dLabel3">
+                            </ul>
+                        </div>
+                    </th>
+                    <th>
+                        <div class="dropdown">
+                            <button id="dLabel4" 
+                                    class="header-dropdown btn btn-secondary dropdown-toggle"
+                                    type="button"
+                                    data-toggle="dropdown"
+                                    aria-haspopup="true"
+                                    aria-expanded="false">
+                                Parsed Info
+                                <span class="caret"></span>
+                            </button>
+                            <ul class="ingredient-table-dropdown dropdown-menu"
+                                aria-labelledby="dLabel4">
+                            </ul>
+                        </div>
+                    </th>
+                </tr>
+            </table>
         </div>
     </div>
   </body>
