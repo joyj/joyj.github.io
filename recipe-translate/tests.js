@@ -4,14 +4,16 @@ function runTests() {
         var inputLines = data.split("\n");
         var currentTestCase = null;
         var currentTestCategory = "";
+        var lineCount = -1;
         inputLines.forEach(function(line) {
+            lineCount++;
             if (line.length == 0) {
                 return;
             }
             if (line[0] != " ") {
                 // it is ok to call runTestCase on something with just input
                 // because there is nothing to test
-                runTestCase(currentTestCase, currentTestCategory);
+                runTestCase(currentTestCase, lineCount, currentTestCategory);
                 currentTestCase = null;
                 if (line[0] == "#") {
                     currentTestCategory = line.substring(1, line.length).trim();
@@ -42,7 +44,7 @@ function shouldOutputTestResult(testCategory) {
 }
 
 // TODO also run for parsed_info, hide_column, and original_line
-function runTestCase(testCase, testCategory) {
+function runTestCase(testCase, lineCount, testCategory) {
     if (testCase == null) {
         return;
     }
@@ -53,7 +55,6 @@ function runTestCase(testCase, testCategory) {
     }
     var multiplier = testCase["multiplier"];
     testCase["hide_column"] = "";
-    testCase["us_measures"] = "not implemented yet :(";  // TODO
 
     var ingredientInfo = parseLineToInfo(input);
     var translationKeys = [
@@ -74,9 +75,9 @@ function runTestCase(testCase, testCategory) {
                     && expectedOutput != output) {
                 var debugMsg = getDebugMessage(ingredientInfo);
                 debugMsg = debugMsg.replace(/<br\/>/g, "\n");
-                var errorMsg = ("===" + testCategory + "\n"
-                    + "Failed translate line to " + key + "\n"
-                    + "\tInput: " + input + "\n"
+                var errorMsg = ("===" + testCategory + ", test line " + lineCount + "\n"
+                    + "Failed translate line: " + input + "\n"
+                    + "\tx" + multiplier + " to " + key + "\n"
                     + "\tExpected: " + expectedOutput + "\n"
                     + "\tGot: " + output + "\n"
                     + "\tDebug------\n" + debugMsg);

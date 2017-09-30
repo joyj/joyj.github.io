@@ -1,16 +1,45 @@
 var volume_conversions = {
     // US measure to mL
-    "cup" : 240,
     "teaspoon": 5,
     "tsp": 5,
     "t": 5,
     "tablespoon": 15,
     "tbsp": 15,
     "T": 15,
-    "fl oz" : 29.57,
-    "fl. oz." : 29.57,
-    "fluid ounce" : 29.57,
+    "fl oz" : 30,
+    "fl. oz." : 30,
+    "fluid ounce" : 30,
+    "cup" : 240,
 };
+
+var us_volume_lookup = [
+    // mL to US measures
+    [0.625, "1/8 tsp"],
+    [1.25, "1/4 tsp"],
+    [1.875, "3/8 tsp"],
+    [2.5, "1/2 tsp"],
+    [3.75, "3/4 tsp"],
+    [5, "1 tsp"],
+    [7.5, "1/2 tbsp"],
+    [10, "2 tsp"],
+    [15, "1 tbsp"],
+    [20, "4 tsp"],
+    [30, "2 tbsp"],
+    [45, "3 tbsp"],
+    [60, "1/4 cup"],
+    [75, "5 tbsp"],
+    [80, "1/3 cup"],
+    [90, "6 tbsp"],
+    [115, "7 tbsp"],
+    [120, "1/2 cup"],
+    [160, "2/3 cup"],
+    [180, "3/4 cup"],
+    [240, "1 cup"],
+    [300, "1 1/4 cup"],
+    [320, "1 1/3 cup"],
+    [360, "1 1/2 cup"],
+    [400, "1 2/3 cup"],
+];
 
 var mass_conversions = {
     // to g
@@ -41,7 +70,6 @@ var fractions_conversion = {
     "\u215D": " 5/8",
     "\u215E": " 7/8"
 };
-
 
 var known_ingredients = {
     "water" : {

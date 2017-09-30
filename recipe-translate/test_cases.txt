@@ -4,25 +4,25 @@
     ingredient     | flour
     grams          | 125g all purpose flour
     mL             | 240mL all purpose flour
-    us_measures    | 1 cup flour
+    us_measures    | 1 cup all purpose flour
 1 cup unrecognized type of flour
     multiplier 1.0
     ingredient     | flour
     grams          | 125g all purpose flour
     mL             | 240mL all purpose flour
-    us_measures    | 1 cup flour
+    us_measures    | 1 cup all purpose flour
 1 cup Flour
     multiplier 1.0
     ingredient     | flour
     grams          | 125g all purpose flour
     mL             | 240mL all purpose flour
-    us_measures    | 1 cup flour
+    us_measures    | 1 cup all purpose flour
 2 cups flour
     multiplier 1.0
     ingredient     | flour
     grams          | 250g all purpose flour
     mL             | 480mL all purpose flour
-    us_measures    | 2 cups flour
+    us_measures    | 2 cups all purpose flour
 1 cup water
     multiplier 1.0
     ingredient     | water
@@ -60,6 +60,24 @@ unable to parse line into sections
     grams          | 480g water
     mL             | 480mL water
     us_measures    | 2 cups water
+1 cup water
+    multiplier 0.5
+    ingredient     | water
+    grams          | 120g water
+    mL             | 120mL water
+    us_measures    | 1/2 cup water
+1/8 tsp water
+    multiplier 0.5
+    ingredient     | water
+    grams          | 0.31g water
+    mL             | 0.31mL water
+    us_measures    | 50% of 1/8 tsp water
+1/4 tsp water
+    multiplier 0.5
+    ingredient     | water
+    grams          | 0.63g water
+    mL             | 0.63mL water
+    us_measures    | 1/8 tsp water
 
 # difficult cases
 1 cup unknown ingredient
