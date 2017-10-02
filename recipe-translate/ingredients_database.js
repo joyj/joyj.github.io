@@ -334,6 +334,17 @@ var known_ingredients = {
     "apple sauce" : {
         "aka": "unsweetened applesauce",
     },
+    "popping corn" : {
+        "grams": 36,
+        "mL": 45,
+        "calories": 130,
+        "fat": 1.5,
+        "carbohydrates": 26,
+        "protein": 4,
+    },
+    "popcorn" : {
+        "aka": "popping corn",
+    },
     "template" : {
         "grams": 0,
         "mL": 0,

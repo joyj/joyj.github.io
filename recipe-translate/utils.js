@@ -1,14 +1,20 @@
 function triggerTranslation() {
     var ingredients = $('#ingredients-input').val();
     var multiplier = $('#multiplier-input').val();
+    var numServings = $('#servings-input').val();
     if (multiplier == null || multiplier == "") {
         multiplier = 1;
+    }
+    if (numServings == null || numServings == "") {
+        numServings = 1;
     }
     var translationKeys = getTranslationKeys();
     var linesOfIngredientInfo = getIngredients(ingredients);
     var display = constructDisplay(linesOfIngredientInfo, translationKeys, multiplier);
     $("#ingredients-table .generated").remove();
     $('#ingredients-table').append(display);
+    var nutrition = calculateNutrition(linesOfIngredientInfo, multiplier, numServings);
+    $('#nutritional-info').html(nutrition);
 };
 
 function getTranslationKeys() {
@@ -37,7 +43,7 @@ function getIngredients(input) {
         if (line.startsWith("===")) {
             break;
         }
-        if (!line.startsWith("###")) {
+        if (line.match(/^\s*$/) == null && !line.startsWith("###")) {
             linesOfIngredientInfo.push(parseLineToInfo(line));
         }
     }
@@ -194,6 +200,45 @@ function getDebugMessage(ingrInfoObj) {
         + " <br/> database ingredient entry: " + JSON.stringify(ingrInfo, null, 4);
 }
 
+function calculateAmt(translateTo, ingrInfoObj, multiplier) {
+    var amt = ingrInfoObj["measure_amt"];
+    var unit = ingrInfoObj["unit"];
+    var ingrInfo = ingrInfoObj["ingredient_info"];
+    var mL = null;
+    var grams = null;
+    if (unit in volume_conversions) {
+        mL = amt * volume_conversions[unit] * eval(multiplier);
+        if (ingrInfo != null) {
+            grams = mL * ingrInfo["grams"] / ingrInfo["mL"];
+        }
+    }
+    if (unit in mass_conversions) {
+        grams = amt * mass_conversions[unit] * eval(multiplier);
+        if (ingrInfo != null) {
+            mL = grams * ingrInfo["mL"] / ingrInfo["grams"];
+        }
+    }
+    if (translateTo == "grams" && grams != null) {
+        return grams;
+    }
+    if (translateTo == "mL" && mL != null) {
+        return mL;
+    }
+    if (translateTo == "calories" && grams != null && ingrInfo != null) {
+        return grams * ingrInfo["calories"] / ingrInfo["grams"];
+    }
+    if (translateTo == "fat" && grams != null && ingrInfo != null) {
+        return grams * ingrInfo["fat"] / ingrInfo["grams"];
+    }
+    if (translateTo == "carbohydrates" && grams != null && ingrInfo != null) {
+        return grams * ingrInfo["carbohydrates"] / ingrInfo["grams"];
+    }
+    if (translateTo == "protein" && grams != null && ingrInfo != null) {
+        return grams * ingrInfo["protein"] / ingrInfo["grams"];
+    }
+    return null;
+}
+
 // Note: used for testing
 function translateIngredient(ingrInfoObj, translateTo, multiplier) {
     if (ingrInfoObj == null) {
@@ -215,23 +260,11 @@ function translateIngredient(ingrInfoObj, translateTo, multiplier) {
     if (translateTo == "original_line") {
         return original_line;
     }
-    var mL = null;
-    var grams = null;
-    if (unit in volume_conversions) {
-        mL = amt * volume_conversions[unit] * eval(multiplier);
-        if (ingrInfo != null) {
-            grams = mL * ingrInfo["grams"] / ingrInfo["mL"];
-        }
-    }
-    if (unit in mass_conversions) {
-        grams = amt * mass_conversions[unit] * eval(multiplier);
-        if (ingrInfo != null) {
-            mL = grams * ingrInfo["mL"] / ingrInfo["grams"];
-        }
-    }
     if (translateTo == "ingredient" && parsedIngredient != null) {
         return parsedIngredient;
     }
+    var mL = calculateAmt("mL", ingrInfoObj, multiplier);
+    var grams = calculateAmt("grams", ingrInfoObj, multiplier);
     if (translateTo == "grams" && grams != null) {
         return round_decimal(grams) + "g " + ingredient;
     }
@@ -289,17 +322,40 @@ function constructDisplay(ingredientInfoLines, translationKeys, multiplier) {
     // TODO sanitize input before dumping into html
     var result = "";
     for (var lineInfo of ingredientInfoLines) {
-        var inputLine = lineInfo["original_line"];
-        if (inputLine.match(/^\s*$/) == null && !inputLine.startsWith("###")) {
-            // only generate table entry for non-empty input line
-            var columns = "";
-            for (var key of translationKeys) {
-                columns += '<td>' + translateIngredient(lineInfo, key, multiplier) + '</td>'
-            }
-            result += '<tr class="generated">' + columns + '</tr>';
+        var columns = "";
+        for (var key of translationKeys) {
+            columns += '<td>' + translateIngredient(lineInfo, key, multiplier) + '</td>'
         }
+        result += '<tr class="generated">' + columns + '</tr>';
     }
     return result;
+}
+
+function calculateNutrition(ingredientInfoLines, multiplier, numServings) {
+    var nutrition = {
+        "calories": 0,
+        "fat": 0,
+        "carbohydrates": 0,
+        "protein": 0,
+    };
+    for (var lineInfo of ingredientInfoLines) {
+        $.each(nutrition, function(key, _) {
+            nutrition[key] += calculateAmt(key, lineInfo, multiplier);
+        });
+    }
+    $.each(nutrition, function(key, _) {
+        try {
+            nutrition[key] /= eval(numServings);
+        } catch(err) {
+            // do nothing for now (so 1 serving)
+            // TODO maybe a message that says this is the error
+        }
+    });
+    return "Nutrition per serving"
+        + " | calories: " + round_decimal(nutrition["calories"])
+        + " | fat: " + round_decimal(nutrition["fat"]) + "g"
+        + " | carbohydrates: " + round_decimal(nutrition["carbohydrates"]) + "g"
+        + " | protein: " + round_decimal(nutrition["protein"]) + "g";
 }
 
 function round_decimal(value) {
@@ -321,7 +377,7 @@ function getDropdownDisplay() {
     var choices = "";
     $.each(ingredientsColumnChoices, function(display, translateKey) {
         choices = choices
-            + "<li><a href='#'>"
+            + "<li><a href='#' data-toggle='dropdown'>"
             + display
             + "</a></li>";
     });

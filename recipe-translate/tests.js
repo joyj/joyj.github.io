@@ -45,7 +45,8 @@ function shouldOutputTestResult(testCategory) {
 
 }
 
-// TODO also run for parsed_info, hide_column, and original_line
+// TODO don't translate empty lines or lines that start with ###
+// TODO don't translate lines after ===
 function runTestCase(testCase, lineCount, testCategory) {
     if (testCase == null) {
         return;
