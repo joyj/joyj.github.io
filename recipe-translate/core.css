@@ -17,10 +17,27 @@
     font-size: 20px;
 }
 
-.generated {
+.ingredients-details {
     font-size: 14px;
+}
+
+.instructions-list {
+    font-size: 16px;
+}
+
+.instruction-line {
+    padding-top: 5px;
+    padding-bottom: 5px;
 }
 
 .header-dropdown {
   background-color: transparent;
+}
+
+.tooltip-element {
+    border-bottom: 1px dotted black;
+}
+
+.tooltip-inner {
+    font-size: 14px;
 }

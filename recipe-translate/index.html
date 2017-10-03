@@ -35,7 +35,7 @@
     <div class="container">
         <div class="row">
             <div class="col-md-8">
-                <textarea class="form-control" id='ingredients-input' rows=10
+                <textarea class="form-control" id='recipe-input' rows=10
                           placeholder="Paste ingredients here"></textarea>
             </div>
             <div class="col-md-4">
@@ -150,6 +150,9 @@
                 </tr>
             </table>
         </div>
+        <div id="instructions">
+            <p class="large-text">Instructions</p>
+        </div>
     </div>
   </body>
   <script src="ingredients_database.js"></script>
@@ -174,8 +177,12 @@
 
     // Populate default example recipe text
     jQuery.get('/recipe-translate/default_input.txt', function(data) {
-        $('#ingredients-input').html(data);
+        $('#recipe-input').html(data);
         triggerTranslation();
     });
+
+    $(function () {
+          $('[data-toggle="tooltip"]').tooltip()
+    })
   </script>
 </html>

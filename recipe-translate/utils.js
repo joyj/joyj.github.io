@@ -1,5 +1,5 @@
 function triggerTranslation() {
-    var ingredients = $('#ingredients-input').val();
+    var recipe = $('#recipe-input').val();
     var multiplier = $('#multiplier-input').val();
     var numServings = $('#servings-input').val();
     if (multiplier == null || multiplier == "") {
@@ -9,12 +9,21 @@ function triggerTranslation() {
         numServings = 1;
     }
     var translationKeys = getTranslationKeys();
-    var linesOfIngredientInfo = getIngredients(ingredients);
-    var display = constructDisplay(linesOfIngredientInfo, translationKeys, multiplier);
+    var linesOfIngredientInfo = getIngredients(recipe);
+    var instructions = getInstructions(recipe);
+    var ingredientTranslations = constructTranslations(linesOfIngredientInfo, translationKeys, multiplier);
+    var display = constructIngredientDisplay(ingredientTranslations, translationKeys);
     $("#ingredients-table .generated").remove();
     $('#ingredients-table').append(display);
+
     var nutrition = calculateNutrition(linesOfIngredientInfo, multiplier, numServings);
     $('#nutritional-info').html(nutrition);
+
+    var instructionDisplay = constructInstructionDisplay(
+            instructions, ingredientTranslations, translationKeys);
+    $("#instructions .generated").remove();
+    $('#instructions').append(instructionDisplay);
+    $('[data-toggle="tooltip"]').tooltip()
 };
 
 function getTranslationKeys() {
@@ -48,6 +57,24 @@ function getIngredients(input) {
         }
     }
     return linesOfIngredientInfo;
+}
+
+function getInstructions(input) {
+    var inputLines = input.split("\n");
+    var instructionsLines = [];
+    var reachedInstructions = false;
+    for (var line of inputLines) {
+        if (line.startsWith("===")) {
+            reachedInstructions = true;
+        } else {
+            if (reachedInstructions
+                    && line.match(/^\s*$/) == null
+                    && !line.startsWith("###")) {
+                instructionsLines.push(line);
+            }
+        }
+    }
+    return instructionsLines;
 }
 
 // Note: used for testing
@@ -106,7 +133,7 @@ function parseLineToInfo(line) {
     var databaseIngredientName = null;
     var ingrInfo = null;
     if (ingredient) {
-        closestIngr = tryToMatchIngredient(ingredient);
+        closestIngr = tryToMatchIngredient(ingredient, known_ingredients);
         databaseIngredientName = closestIngr;
         if (closestIngr != null) {
             ingrInfo = known_ingredients[closestIngr];
@@ -129,7 +156,20 @@ function parseLineToInfo(line) {
     };
 }
 
-function tryToMatchIngredient(ingredient_tokens) {
+function generateIngredientNicknames(ingredient) {
+    if (ingredient == null || ingredient == undefined) {
+        return [];
+    }
+    var ingredient_tokens = ingredient.split(/\W+/);
+    var ingredient_substrings = [];
+    for (var start = 0; start < ingredient_tokens.length; start++) {
+            var ingredient = ingredient_tokens.slice(start, ingredient_tokens.length).join(" ");
+            ingredient_substrings.push(ingredient);
+    }
+    return ingredient_substrings;
+}
+
+function tryToMatchIngredient(ingredient_tokens, ingredients_database) {
     // Remove any strange characters
     ingredient = ingredient_tokens.join(" ");
     ingredient_tokens = ingredient.split(/\W+/);
@@ -140,7 +180,7 @@ function tryToMatchIngredient(ingredient_tokens) {
             ingredient = ingredient_tokens.slice(start, end).join(" ");
             normalizedIngredient = ingredient.toLowerCase();
 
-            if (normalizedIngredient in known_ingredients) {
+            if (normalizedIngredient in ingredients_database) {
                 return normalizedIngredient;
             }
         }
@@ -318,18 +358,75 @@ function calculateUsMeasure(mL) {
 
 }
 
-function constructDisplay(ingredientInfoLines, translationKeys, multiplier) {
+function constructTranslations(ingredientInfoLines, translationKeys, multiplier) {
+    // TODO sanitize input before dumping into html
+    var allTranslations = [];
+    for (var lineInfo of ingredientInfoLines) {
+        var ingredientTranslations = {};
+        $.each(ingredientsColumnChoices, function(displayKey, key) {
+            ingredientTranslations[key] = translateIngredient(lineInfo, key, multiplier);
+        });
+        allTranslations.push(ingredientTranslations);
+    }
+    return allTranslations;
+}
+
+function constructIngredientDisplay(ingTranslations, translationKeys) {
     // TODO sanitize input before dumping into html
     var result = "";
-    for (var lineInfo of ingredientInfoLines) {
+    for (var ingredient of ingTranslations) {
         var columns = "";
         for (var key of translationKeys) {
-            columns += '<td>' + translateIngredient(lineInfo, key, multiplier) + '</td>'
+            columns += '<td>' + ingredient[key] + '</td>'
         }
-        result += '<tr class="generated">' + columns + '</tr>';
+        result += '<tr class="ingredients-details generated">' + columns + '</tr>';
     }
     return result;
 }
+
+function constructInstructionDisplay(instructions, ingTranslations, translationKeys) {
+    // TODO sanitize input before dumping into html
+    var result = '<ol class="instructions-list generated">';
+    var remainingIngredients = ingTranslations;
+    for (var line of instructions) {
+        var lineTokens = line.split(/\s+/);
+        var unusedIngredients = [];
+        for (var ingredient of remainingIngredients) {
+            var ingredientName = ingredient["ingredient"];
+            var ingredientNicknames = generateIngredientNicknames(
+                    ingredientName);
+            var matchedIngredient = false;
+
+            for (var nickname of ingredientNicknames) {
+                if (line.match(nickname) != null) {
+                    matchedIngredient = true;
+                    var tooltipText = "";
+                    for (var translateKey of translationKeys) {
+                        if (Object.values(hoverChoices).includes(translateKey)) {
+                            tooltipText += " | " + ingredient[translateKey];
+                        }
+                    }
+                    var hoverText = '<span'
+                            + ' class="tooltip-element"'
+                            + ' data-toggle="tooltip"'
+                            + ' data-placement="top"'
+                            + ' title="' + tooltipText + '">'
+                        + nickname
+                        + '</span>';
+                    line = line.replace(new RegExp(nickname, 'gi'), hoverText);
+                    break;
+                }
+            } 
+            if (!matchedIngredient){
+                unusedIngredients.push(ingredient);
+            }
+        }
+        result += '<li class="instruction-line generated">' + line + '</li>';
+        remainingIngredients = unusedIngredients;
+    }
+    return result + "</ol>";
+}
+
 
 function calculateNutrition(ingredientInfoLines, multiplier, numServings) {
     var nutrition = {
@@ -358,6 +455,19 @@ function calculateNutrition(ingredientInfoLines, multiplier, numServings) {
         + " | protein: " + round_decimal(nutrition["protein"]) + "g";
 }
 
+function constructInstructions(instructions, ingredientInfoLines, translationKeys, multiplier) {
+    // TODO sanitize input before dumping into html
+    var result = "";
+    for (var lineInfo of ingredientInfoLines) {
+        var columns = "";
+        for (var key of translationKeys) {
+            columns += '<td>' + translateIngredient(lineInfo, key, multiplier) + '</td>'
+        }
+        result += '<tr class="generated">' + columns + '</tr>';
+    }
+    return result;
+}
+
 function round_decimal(value) {
     var decimals = 2;  // round to 2 places after decimal point
     return Number(Math.round(value+'e'+decimals)+'e-'+decimals);
@@ -371,6 +481,13 @@ var ingredientsColumnChoices = {
     "Original Line": "original_line",
     "Parsed Info": "parsed_info",
     "Choose one": "hide_column",
+};
+
+var hoverChoices = {
+    "Mass (grams)": "grams",
+    "Volume (mL)": "mL",
+    "Volume (US measures)": "us_measures",
+    "Original Line": "original_line",
 };
 
 function getDropdownDisplay() {

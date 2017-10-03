@@ -1,5 +1,11 @@
 function runTests() {
     console.log("-------Running tests.");
+    console.log("-------Translation tests");
+    runTranslationTests();
+    console.log("-------Finished running tests.");
+}
+
+function runTranslationTests() {
     jQuery.get('/recipe-translate/translation_test_cases.txt', function(data) {
         var inputLines = data.split("\n");
         var currentTestCase = null;
@@ -33,7 +39,6 @@ function runTests() {
                 currentTestCase[translateKey] = expectedVal;
             }
         });
-        console.log("-------Finished running tests.");
     });
 }
 
@@ -86,4 +91,10 @@ function runTestCase(testCase, lineCount, testCategory) {
             }
         }
     });
+}
+
+function assertEquals(expected, actual, msg) {
+    if (expected != actual) {
+        console.log("Expected " + expected + " but got " + actual + ". Msg: " + msg);
+    }
 }
