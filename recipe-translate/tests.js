@@ -1,8 +1,12 @@
 function runTests() {
-    console.log("-------Running tests.");
+    console.log("-------Running tests-------");
     console.log("-------Translation tests");
     runTranslationTests();
-    console.log("-------Finished running tests.");
+    console.log("-------Nutrition tests");
+    runNutritionTests();
+    console.log("-------Instructions tests");
+    runInstructionsTests();
+    console.log("-------Finished running tests-------");
 }
 
 function runTranslationTests() {
@@ -18,9 +22,12 @@ function runTranslationTests() {
                 return;
             }
             if (line[0] != " ") {
-                // it is ok to call runTestCase on something with just input
-                // because there is nothing to test
-                runTestCase(currentTestCase, currentTestLineCount, currentTestCategory);
+                // it is ok to call runTranslationTestCase on something 
+                // with just input because there is nothing to test
+                runTranslationTestCase(
+                    currentTestCase,
+                    currentTestLineCount,
+                    currentTestCategory);
                 currentTestCase = null;
                 if (line[0] == "#") {
                     currentTestCategory = line.substring(1, line.length).trim();
@@ -35,7 +42,8 @@ function runTranslationTests() {
             } else {
                 var splitIndex = line.indexOf("|");
                 var translateKey = line.substring(0, splitIndex).trim();
-                var expectedVal = line.substring(splitIndex + 1, line.length).trim();
+                var expectedVal = line.substring(splitIndex + 1, line.length)
+                    .trim();
                 currentTestCase[translateKey] = expectedVal;
             }
         });
@@ -43,16 +51,15 @@ function runTranslationTests() {
 }
 
 function shouldOutputTestResult(testCategory) {
-    if (testCategory == "difficult cases") {
+    if (testCategory == "difficult translations") {
         return false;
     }
     return true;
-
 }
 
 // TODO don't translate empty lines or lines that start with ###
 // TODO don't translate lines after ===
-function runTestCase(testCase, lineCount, testCategory) {
+function runTranslationTestCase(testCase, lineCount, testCategory) {
     if (testCase == null) {
         return;
     }
@@ -72,8 +79,9 @@ function runTestCase(testCase, lineCount, testCategory) {
         "parsed_info",
     ]
     var multiplier = testCase["multiplier"];
+    var allTranslations = getAllColumnTranslations(ingredientInfo, multiplier);
     translationKeys.forEach(function(key) {
-        var output = translateIngredient(ingredientInfo, key, multiplier);
+        var output = allTranslations[key];
         // run for parsed_info but don't check the output
         if (key != "parsed_info") {
             var expectedOutput = testCase[key];
@@ -81,7 +89,8 @@ function runTestCase(testCase, lineCount, testCategory) {
                     && expectedOutput != output) {
                 var debugMsg = getDebugMessage(ingredientInfo);
                 debugMsg = debugMsg.replace(/<br\/>/g, "\n");
-                var errorMsg = ("===" + testCategory + ", test line " + lineCount + "\n"
+                var errorMsg = (
+                    "===" + testCategory + ", test line " + lineCount + "\n"
                     + "Failed translate line: " + input + "\n"
                     + "\tx" + multiplier + " to " + key + "\n"
                     + "\tExpected: " + expectedOutput + "\n"
@@ -93,8 +102,128 @@ function runTestCase(testCase, lineCount, testCategory) {
     });
 }
 
-function assertEquals(expected, actual, msg) {
-    if (expected != actual) {
-        console.log("Expected " + expected + " but got " + actual + ". Msg: " + msg);
+function runNutritionTests() {
+    var i1 = "1 cup water";
+    var i2 = "1 cup flour";
+    var i3 = "1 cup milk";
+    var i4 = "something that doesn't parse";
+    var allLines = [i1, i2, i3, i4];
+    
+    runNutritionTestCase([i1], 1, 1, formatNutrition(0, 0, 0, 0));
+    runNutritionTestCase([i2], 1, 1, formatNutrition(455, 1.2, 95, 13));
+    runNutritionTestCase([i3], 1, 1, formatNutrition(124, 4.9, 12, 8));
+    runNutritionTestCase([i4], 1, 1, formatNutrition(0, 0, 0, 0));
+    runNutritionTestCase(allLines, 1, 1, formatNutrition(579, 6.1, 107, 21));
+
+    // multiplier
+    runNutritionTestCase([i1], 2, 1, formatNutrition(0, 0, 0, 0));
+    runNutritionTestCase([i2], 2, 1, formatNutrition(910, 2.4, 190, 26));
+    runNutritionTestCase([i3], 2, 1, formatNutrition(248, 9.8, 24, 16));
+    runNutritionTestCase([i4], 2, 1, formatNutrition(0, 0, 0, 0));
+    runNutritionTestCase(allLines, 2, 1, formatNutrition(1158, 12.2, 214, 42));
+
+    // servings
+    runNutritionTestCase([i1], 2, 10, formatNutrition(0, 0, 0, 0));
+    runNutritionTestCase([i2], 2, 10, formatNutrition(91, 0.24, 19, 2.6));
+    runNutritionTestCase([i3], 2, 10, formatNutrition(24.8, 0.98, 2.4, 1.6));
+    runNutritionTestCase([i4], 2, 10, formatNutrition(0, 0, 0, 0));
+    runNutritionTestCase(
+            allLines, 2, 10, formatNutrition(115.8, 1.22, 21.4, 4.2));
+}
+
+
+function runNutritionTestCase(
+        ingredientLines, multiplier, numServings, expectedOutput) {
+    var ingredientInfoLines = ingredientLines.map(parseLineToInfo);
+    var ingredientAmts = ingredientInfoLines.map(
+        function (ingredientLine) {
+            return calculateAmts(ingredientLine, multiplier);
+        });
+    var actualOutput = calculateNutrition(ingredientAmts, numServings);
+    if (expectedOutput != actualOutput) {
+        var msg = "=== Failed Nutrition Test \n"
+            + "Input:\n\t" + ingredientLines.join("\n\t") + "\n"
+            + "Expected:\n\t" + expectedOutput + "\n"
+            + "Got: \n\t" + actualOutput;
+        console.log(msg);
     }
 }
+
+function runInstructionsTests() {
+    var i1 = "1 cup water";
+    var i2 = "1 cup unsweetened applesauce";
+    var i3 = "1/2 cup all-purpose flour";
+    var i4 = "unable to parse salt";
+
+    var instruction1 = "Mix the water and applesauce.";
+    var instruction2 = "Add the flour slowly.";
+    var instruction3 = "No ingredients in this line.";
+
+    runInstructionTestCase(
+            [i1, i2, i3, i4],
+            [instruction1],
+            1,
+            ["us_measures"],
+            {
+                "water" : "1 cup water",
+                "applesauce": "1 cup unsweetened applesauce",
+            });
+
+    runInstructionTestCase(
+            [i1, i2, i3, i4],
+            [instruction1, instruction2, instruction3],  // Added instructions
+            1,
+            ["us_measures"],
+            {
+                "water" : "1 cup water",
+                "applesauce": "1 cup unsweetened applesauce",
+                "flour": "1/2 cup all purpose flour",
+            });
+
+    runInstructionTestCase(
+            [i1, i2, i3, i4],
+            [instruction1, instruction2, instruction3],
+            2,  // Multiplier
+            ["us_measures"],
+            {
+                "water" : "2 cups water",
+                "applesauce": "2 cups unsweetened applesauce",
+                "flour": "1 cup all purpose flour",
+            });
+}
+
+function runInstructionTestCase(
+        ingredientLines,
+        instructions,
+        multiplier,
+        translationKeys,
+        expectedHovers) {
+    var ingredientInfoLines = ingredientLines.map(parseLineToInfo);
+    var ingTranslations = ingredientInfoLines.map(
+        function (ingredientLine) {
+            return getAllColumnTranslations(ingredientLine, multiplier);
+        });
+    var output = constructInstructionDisplay(
+            instructions, ingTranslations, translationKeys);
+
+    $.each(expectedHovers, function(ingredientInText, hoverText) {
+        var expectedHtml = '<span'
+                + ' class="tooltip-element"'
+                + ' data-toggle="tooltip"'
+                + ' data-placement="top"'
+                + ' title="' + hoverText + '">'
+            + ingredientInText
+            + '</span>';
+        if (output.match(expectedHtml) == null) {
+            var msg = "===Failed Instruction Test: \n"
+                + "\tIngredients: " + ingredientLines + "\n"
+                + "\tInstructions: " + instructions + "\n"
+                + "\tExpected to find hover for ingredient: "
+                    + ingredientInText + "\n"
+                + "\tWith hover text: " + hoverText + "\n"
+                + "\tActual html:\n" + output;
+            console.log(msg);
+        }
+    });
+}
+

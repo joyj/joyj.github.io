@@ -1,7 +1,13 @@
-# basic functions
+# basic translations
 1 cup flour
     multiplier 1.0
     ingredient     | flour
+    grams          | 125g all purpose flour
+    mL             | 240mL all purpose flour
+    us_measures    | 1 cup all purpose flour
+1 cup all-purpose flour
+    multiplier 1.0
+    ingredient     | all purpose flour
     grams          | 125g all purpose flour
     mL             | 240mL all purpose flour
     us_measures    | 1 cup all purpose flour
@@ -113,20 +119,20 @@ unable to parse line into sections
     grams          | 0.63g water
     mL             | 0.63mL water
     us_measures    | 1/8 tsp water
-
-# difficult cases
 1 cup unknown ingredient
     multiplier 1.0
     ingredient     | 1 cup unknown ingredient
     grams          | 
-    mL             | 
+    mL             | 240mL unknown ingredient
     us_measures    | 1 cup unknown ingredient
 100 grams unknown ingredient
     multiplier 1.0
     ingredient     | 100 grams unknown ingredient
-    grams          | 100 grams unknown ingredient
+    grams          | 100g unknown ingredient
     mL             | 
     us_measures    |
+
+# difficult translations
 1-2 cups water
     multiplier 1.0
     ingredient     | water
