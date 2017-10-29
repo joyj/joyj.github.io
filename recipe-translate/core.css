@@ -36,6 +36,7 @@
 
 .tooltip-element {
     border-bottom: 1px dotted black;
+    white-space: nowrap;
 }
 
 .tooltip-inner {

@@ -68,7 +68,7 @@ function runTranslationTestCase(testCase, lineCount, testCategory) {
     testCase["original_line"] = input;
     testCase["hide_column"] = "";
 
-    var ingredientInfo = parseLineToInfo(input);
+    var ingredientInfo = new IngredientInfo(input);
     var translationKeys = [
         "ingredient",
         "grams",
@@ -134,7 +134,9 @@ function runNutritionTests() {
 
 function runNutritionTestCase(
         ingredientLines, multiplier, numServings, expectedOutput) {
-    var ingredientInfoLines = ingredientLines.map(parseLineToInfo);
+    var ingredientInfoLines = ingredientLines.map(function (line) {
+        return new IngredientInfo(line);
+    });
     var ingredientAmts = ingredientInfoLines.map(
         function (ingredientLine) {
             return calculateAmts(ingredientLine, multiplier);
@@ -156,8 +158,6 @@ function runInstructionsTests() {
     var i4 = "unable to parse salt";
 
     var instruction1 = "Mix the water and applesauce.";
-    var instruction2 = "Add the flour slowly.";
-    var instruction3 = "No ingredients in this line.";
 
     runInstructionTestCase(
             [i1, i2, i3, i4],
@@ -169,9 +169,11 @@ function runInstructionsTests() {
                 "applesauce": "1 cup unsweetened applesauce",
             });
 
+    var instruction2 = "Add the flour slowly.";
+    var instruction3 = "No ingredients in this line.";
     runInstructionTestCase(
             [i1, i2, i3, i4],
-            [instruction1, instruction2, instruction3],  // Added instructions
+            [instruction1, instruction2, instruction3],
             1,
             ["us_measures"],
             {
@@ -190,6 +192,47 @@ function runInstructionsTests() {
                 "applesauce": "2 cups unsweetened applesauce",
                 "flour": "1 cup all purpose flour",
             });
+
+    var i5 = "1 cup almond flour";
+    runInstructionTestCase(
+            [i1, i2, i3, i4, i5],  // 2 types of flour
+            [instruction1, instruction2],
+            1,
+            ["us_measures"],
+            {
+                "water" : "1 cup water",
+                "applesauce": "1 cup unsweetened applesauce",
+                "flour": "1/2 cup all purpose flour + 1 cup almond flour",
+            });
+
+    var instruction4 = "Mix the all purpose flour and almond flour.";
+    runInstructionTestCase(
+            [i3, i5],  // 2 types of flour
+            [instruction4],
+            1,
+            ["us_measures"],
+            {
+                "all purpose flour": "1/2 cup all purpose flour",
+                "almond flour": "1 cup almond flour",
+            });
+
+    runInstructionTestCase(
+            [
+                "1 tbsp vanilla extract",
+                "1 cup stuff (with some extra note)",
+                "1 tsp baking powder",
+            ],
+            [
+                "Line a baking sheet with paper.",  // should not baking powder
+                "Mix the vanilla, stuff, and baking powder.",
+            ],
+            1,
+            ["us_measures"],
+            {
+                "vanilla": "1 tbsp vanilla extract",
+                "stuff": "1 cup stuff (with some extra note)",
+                "baking powder": "1 tsp baking powder",
+            });
 }
 
 function runInstructionTestCase(
@@ -198,23 +241,28 @@ function runInstructionTestCase(
         multiplier,
         translationKeys,
         expectedHovers) {
-    var ingredientInfoLines = ingredientLines.map(parseLineToInfo);
+    var ingredientInfoLines = ingredientLines.map(function (line) {
+        return new IngredientInfo(line);
+    });
     var ingTranslations = ingredientInfoLines.map(
         function (ingredientLine) {
             return getAllColumnTranslations(ingredientLine, multiplier);
         });
+    var instructionInfoLines = getAllInstructionsInfo(
+            instructions, ingTranslations);
     var output = constructInstructionDisplay(
-            instructions, ingTranslations, translationKeys);
+            instructionInfoLines, translationKeys);
 
     $.each(expectedHovers, function(ingredientInText, hoverText) {
         var expectedHtml = '<span'
                 + ' class="tooltip-element"'
                 + ' data-toggle="tooltip"'
+                + ' data-html="true"'
                 + ' data-placement="top"'
                 + ' title="' + hoverText + '">'
             + ingredientInText
             + '</span>';
-        if (output.match(expectedHtml) == null) {
+        if (output.indexOf(expectedHtml) == -1) {
             var msg = "===Failed Instruction Test: \n"
                 + "\tIngredients: " + ingredientLines + "\n"
                 + "\tInstructions: " + instructions + "\n"

@@ -12,7 +12,6 @@ function triggerTranslation() {
 
     // important calculations
     var ingredientInfoLines = getIngredients(recipe);
-    var instructions = getInstructions(recipe);
     var ingredientAmts = ingredientInfoLines.map(
         function (ingredientLine) {
             return calculateAmts(ingredientLine, multiplier);
@@ -34,8 +33,11 @@ function triggerTranslation() {
     $('#nutritional-info').html(nutrition);
 
     // display instructions
+    var instructions = getInstructions(recipe);
+    var instructionInfoLines = getAllInstructionsInfo(
+            instructions, ingredientTranslations);
     var instructionDisplay = constructInstructionDisplay(
-            instructions, ingredientTranslations, translationKeys);
+            instructionInfoLines, translationKeys);
     $("#instructions .generated").remove();
     $('#instructions').append(instructionDisplay);
     $('[data-toggle="tooltip"]').tooltip()
@@ -68,7 +70,7 @@ function getIngredients(input) {
             break;
         }
         if (line.match(/^\s*$/) == null && !line.startsWith("###")) {
-            linesOfIngredientInfo.push(parseLineToInfo(line));
+            linesOfIngredientInfo.push(new IngredientInfo(line));
         }
     }
     return linesOfIngredientInfo;
@@ -93,168 +95,163 @@ function getInstructions(input) {
 }
 
 // Note: used for testing
-function parseLineToInfo(line) {
-    var editedLine = line;
-    for (var i = 0; i < known_units.length; i++) {
-        // add padding around all units
-        var unit = known_units[i];
-        editedLine = editedLine.replace(
-            new RegExp("(\\d+)" + unit, 'gi'),
-            "$1 " + unit + " ");
-    }
-    var tokens = editedLine.split(/\s+/);  // any number of whitespace
+class IngredientInfo {
+    constructor(originalLine) {
+        this.originalLine = originalLine;
+        this.measurementAmt = null;
+        this.measurementUnit = null;
+        this.parsedEverythingAfterUnit = null;
+        this.parsedIngredientName = null;
+        this.databaseIngredientName = null;
+        this.databaseIngredientInfo = null;
 
-    // find token that is a measurement, can have s at end
-    // everything before is amt, after is ingredient
-    var measureAmt = null;
-    var measurementUnit = null;
-    var ingredient = null;
-    for (var i = 0; i < tokens.length && measureAmt == null; i++) {
-        var token = tokens[i];
-        var tokenOf2words = "";
-        if (i + 1 < tokens.length) {
-            var tokenOf2words = token + " " + tokens[i + 1];
-        }
-
-        // normalize token and check if we know about it
-        // TODO measurement can be multiple tokens if fluid ounces
-        var normalizedToken = token;
-        var normalizedToken2words = tokenOf2words;
-        if (normalizedToken[normalizedToken.length - 1] == "s") {
-            normalizedToken = normalizedToken.substring(
-                    0, normalizedToken.length - 1);
-        }
-        if (normalizedToken2words[normalizedToken2words.length - 1] == "s") {
-            normalizedToken2words = normalizedToken2words.substring(
-                    0, normalizedToken2words.length - 1);
-        }
-        var recognizedUnit = null;
-        // handle the case when token matches but normalized doesn't.
-        // E.g. when T is used for tablespoon
-        if (known_units.includes(normalizedToken)) {
-            recognizedUnit = normalizedToken;
-        } else if (known_units.includes(normalizedToken2words)) {
-            recognizedUnit = normalizedToken2words;
-        } else if (known_units.includes(normalizedToken.toLowerCase())) {
-            recognizedUnit = normalizedToken.toLowerCase();
-        } else if (known_units.includes(normalizedToken2words.toLowerCase())) {
-            recognizedUnit = normalizedToken2words.toLowerCase();
-        }
-        if (recognizedUnit != null) {
-            measureAmt = tokens.slice(0, i);
-            measurementUnit = recognizedUnit;
-            ingredient = tokens.slice(i + 1, tokens.length).join(" ");
-        }
+        var parsedEverythingAfterUnit = this.separateLineToParts(
+                this.originalLine);
+        this.findIngredientInDatabase(parsedEverythingAfterUnit);
     }
 
-    // if able to parse line to amt + unit + ingredient, try to parse each part
-    var closestIngr = null;
-    var databaseIngredientName = null;
-    var ingrInfo = null;
-    if (ingredient) {
-        closestIngr = tryToMatchIngredient(ingredient, known_ingredients);
-        databaseIngredientName = closestIngr;
-        if (closestIngr != null) {
-            ingrInfo = known_ingredients[closestIngr];
-            if ("aka" in ingrInfo) {
-                databaseIngredientName = ingrInfo["aka"];
-                if (databaseIngredientName in known_ingredients) {
-                    // TODO trigger error if not in known_ingredients
-                    ingrInfo = known_ingredients[databaseIngredientName];
+    parseLineToTokens(line) {
+        for (var i = 0; i < known_units.length; i++) {
+            // add padding around all units, in case stuck to number (i.e. 5g)
+            var unit = known_units[i];
+            line = line.replace(
+                new RegExp("(\\d+)" + unit, 'gi'),
+                "$1 " + unit + " ");
+        }
+        return line.split(/\s+/).filter(token => token);  // any number of whitespace
+    }
+
+    separateLineToParts(line) {
+        var tokens = this.parseLineToTokens(line);
+        // find token that is a measurement, can have s at end
+        // everything before is amt, after is ingredient
+        for (var i = 0; i < tokens.length; i++) {
+            var token = tokens[i];
+            var token2words = "";  // fl oz is 2 words
+            if (i + 1 < tokens.length) {
+                var token2words = token + " " + tokens[i + 1];
+            }
+
+            // normalize tokens and check if we know about it
+            if (token[token.length - 1] == "s") {
+                token = token.substring(
+                        0, token.length - 1);
+            }
+            if (token2words[token2words.length - 1] == "s") {
+                token2words = token2words.substring(
+                        0, token2words.length - 1);
+            }
+            var recognizedUnit = null;
+            // handle the case when token matches but normalized doesn't.
+            // E.g. when T is used for tablespoon
+            if (known_units.includes(token)) {
+                recognizedUnit = token;
+            } else if (known_units.includes(token2words)) {
+                recognizedUnit = token2words;
+            } else if (known_units.includes(token.toLowerCase())) {
+                recognizedUnit = token.toLowerCase();
+            } else if (known_units.includes(token2words.toLowerCase())) {
+                recognizedUnit = token2words.toLowerCase();
+            }
+            if (recognizedUnit != null) {
+                this.measurementAmt = this.tryToTranslateAmt(tokens.slice(0, i));
+                this.measurementUnit = recognizedUnit;
+                this.parsedEverythingAfterUnit = tokens
+                    .filter(token => !stop_words.includes(token))
+                    .slice(i + 1, tokens.length)
+                    .join(" ");
+                return this.parsedEverythingAfterUnit;
+            }
+        }
+    }
+
+    tryToTranslateAmt(amtTokens) {
+        // translate amt to decimal
+        var eval_amt = 0;
+        for (var num of amtTokens) {
+
+            $.each(fractions_conversion, function(frac_char, replacement) {
+                num = num.replace(frac_char, replacement);
+            });
+            num = num.replace(" ", "+");
+            try {
+                num = eval(num);
+                eval_amt = eval_amt + num;
+            } catch(err) {
+                // do nothing for now
+            }
+        }
+        return eval_amt;
+    }
+
+    tryToMatchIngredient(ingredient, ingredients_database) {
+        // Remove any strange characters
+        var ingredientTokens = ingredient.split(/\W+/);
+
+        // try to find a matching substring
+        for (var start = 0; start < ingredientTokens.length; start++) {
+            for (var end = ingredientTokens.length; end > start; end--) {
+                var normalizedIngredient = ingredientTokens
+                    .slice(start, end)
+                    .join(" ")
+                    .toLowerCase();
+
+                if (normalizedIngredient in ingredients_database) {
+                    return normalizedIngredient;
+                }
+            }
+        }
+        return null;
+    }
+
+    findIngredientInDatabase(everythingAfterUnit) {
+        // if able to parse line to amt + unit + ingredient, try to find
+        // ingredient
+        if (everythingAfterUnit) {
+            this.parsedIngredientName = this.tryToMatchIngredient(
+                this.parsedEverythingAfterUnit, known_ingredients);
+            this.databaseIngredientName = this.parsedIngredientName;
+            if (this.parsedIngredientName != null) {
+                this.databaseIngredientInfo =
+                    known_ingredients[this.parsedIngredientName];
+                if ("aka" in this.databaseIngredientInfo) {
+                    this.databaseIngredientName =
+                        this.databaseIngredientInfo["aka"];
+                    if (this.databaseIngredientName in known_ingredients) {
+                        // TODO trigger error if not in known_ingredients
+                        this.databaseIngredientInfo = 
+                            known_ingredients[this.databaseIngredientName];
+                    }
                 }
             }
         }
     }
-    return {
-        "original_line": line,
-        "measure_amt": tryToTranslateAmt(measureAmt),
-        "unit": measurementUnit,
-        "parsed_everything_after_unit": ingredient,
-        "parsed_ingredient_name": closestIngr,
-        "ingredient_name": databaseIngredientName,
-        "ingredient_info": ingrInfo,
-    };
 }
 
-function generateIngredientNicknames(ingredient) {
-    if (ingredient == null || ingredient == undefined) {
-        return [];
-    }
-    var ingredientTokens = ingredient.split(/\W+/);
-    var ingredientSubstrings = [];
-    for (var start = 0; start < ingredientTokens.length; start++) {
-            var ingredient = ingredientTokens
-                .slice(start, ingredientTokens.length)
-                .join(" ");
-            ingredientSubstrings.push(ingredient);
-    }
-    return ingredientSubstrings;
-}
-
-function tryToMatchIngredient(ingredient, ingredients_database) {
-    // Remove any strange characters
-    ingredientTokens = ingredient.split(/\W+/);
-
-    // try to find a matching substring
-    for (var start = 0; start < ingredientTokens.length; start++) {
-        for (var end = ingredientTokens.length; end > start; end--) {
-            ingredient = ingredientTokens.slice(start, end).join(" ");
-            normalizedIngredient = ingredient.toLowerCase();
-
-            if (normalizedIngredient in ingredients_database) {
-                return normalizedIngredient;
-            }
-        }
-    }
-    return null;
-}
-
-function tryToTranslateAmt(amtTokens) {
-    if (amtTokens == null) {
-        return null;
-    }
-
-    // translate amt to decimal
-    var eval_amt = 0;
-    for (var num of amtTokens) {
-
-        $.each(fractions_conversion, function(frac_char, replacement) {
-            num = num.replace(frac_char, replacement);
-        });
-        num = num.replace(" ", "+");
-        try {
-            num = eval(num);
-            eval_amt = eval_amt + num;
-        } catch(err) {
-            // do nothing for now
-        }
-    }
-    return eval_amt;
-}
 
 // Note: used for testing
 function getDebugMessage(ingredientLineObj) {
-    if (ingredientLineObj == null) {
+    if (ingredientLineObj == null || ingredientLineObj.measurementAmt == null) {
         return "Could not parse line into amt + unit + ingredient";
     }
-    var amt = ingredientLineObj["measure_amt"];
+    var amt = ingredientLineObj.measurementAmt;
     if (amt == null) {
         amt = "n/a";
     } else {
         amt = roundDecimal(amt);
     }
-    var unit = ingredientLineObj["unit"];
+    var unit = ingredientLineObj.measurementUnit;
     if (unit == null) {
         unit = "n/a";
     }
-    var ingredient = ingredientLineObj["ingredient_name"];
-    var parsedIngredient = ingredientLineObj["parsed_ingredient_name"];
+    var ingredient = ingredientLineObj.databaseIngredientName;
+    var parsedIngredient = ingredientLineObj.parsedIngredientName;
     if (ingredient == null) {
         ingredient = "n/a";
     } else if (ingredient != parsedIngredient) {
         ingredient = parsedIngredient + " --> " + ingredient;
     }
-    var ingrInfo = ingredientLineObj["ingredient_info"];
+    var ingrInfo = ingredientLineObj.databaseIngredientInfo;
     return "amount: " + amt
         + " <br/> unit: " + unit
         + " <br/> ingredient: " + ingredient
@@ -267,9 +264,9 @@ function calculateAmts(ingredientLineObj, multiplier) {
     if (ingredientLineObj == null) {
         return null;
     }
-    var amt = ingredientLineObj["measure_amt"];
-    var unit = ingredientLineObj["unit"];
-    var ingrInfo = ingredientLineObj["ingredient_info"];
+    var amt = ingredientLineObj.measurementAmt;
+    var unit = ingredientLineObj.measurementUnit;
+    var ingrInfo = ingredientLineObj.databaseIngredientInfo;
 
     var mL = null;
     var grams = null;
@@ -314,20 +311,22 @@ function getAllColumnTranslations(ingredientLineObj, multiplier) {
     }
     var translations = {};
 
-    var ingredientAfterUnit = ingredientLineObj["parsed_everything_after_unit"];
-    var parsedIngredient = ingredientLineObj["parsed_ingredient_name"];
-    var originalLine = ingredientLineObj["original_line"];
+    var ingredientAfterUnit = ingredientLineObj.parsedEverythingAfterUnit;
+    var parsedIngredient = ingredientLineObj.parsedIngredientName;
+    var originalLine = ingredientLineObj.originalLine;
 
     translations["hide_column"] = "";
     translations["parsed_info"] = getDebugMessage(ingredientLineObj);
     translations["original_line"] = originalLine;
     if (parsedIngredient != null) {
         translations["ingredient"] = parsedIngredient;
+    } else if (ingredientAfterUnit != null) {
+        translations["ingredient"] = ingredientAfterUnit;
     } else {
         translations["ingredient"] = originalLine;
     }
 
-    var ingredient = ingredientLineObj["ingredient_name"];
+    var ingredient = ingredientLineObj.databaseIngredientName;
     if (ingredient == null) {
         ingredient = ingredientAfterUnit;
     }
@@ -400,51 +399,128 @@ function constructIngredientDisplay(ingTranslations, translationKeys) {
 }
 
 // Note: used in tests
-function constructInstructionDisplay(
-        instructions, ingTranslations, translationKeys) {
+function constructInstructionDisplay(instructionInfoLines, translationKeys) {
     // TODO sanitize input before dumping into html
     var result = '<ol class="instructions-list generated">';
-    var remainingIngredients = ingTranslations;
-    for (var line of instructions) {
-        var unusedIngredients = [];
-        for (var ingredient of remainingIngredients) {
-            var ingredientName = ingredient["ingredient"];
-            var ingredientNicknames = generateIngredientNicknames(
-                    ingredientName);
-            var matchedIngredient = false;
-
-            for (var nickname of ingredientNicknames) {
-                if (line.match(nickname) != null) {
-                    matchedIngredient = true;
-                    var tooltipText = "";
-                    for (var translateKey of translationKeys) {
-                        if (Object.values(hoverChoices)
-                                .includes(translateKey)) {
-                            if (tooltipText != "") {
-                                tooltipText += " | ";
+    for (var instructionInfo of instructionInfoLines) {
+        var line = instructionInfo.instruction;
+        var nicknamesAndTranslationsList = instructionInfo.getIngredientNicknamesAndTranslations();
+        for (var nicknameAndTranslations of nicknamesAndTranslationsList) {
+            var nickname = nicknameAndTranslations[0];
+            var ingredients = nicknameAndTranslations[1];
+            var tooltipText = "";
+            if (nickname != null && ingredients != null) {
+                for (var translateKey of translationKeys) {
+                    if (Object.values(hoverChoices)
+                            .includes(translateKey)) {
+                        if (tooltipText != "") {
+                            tooltipText += "<br>";
+                        }
+                        for (var i = 0; i < ingredients.length; i++) {
+                            if (i > 0) {
+                                tooltipText += " + ";
                             }
+                            var ingredient = ingredients[i];
                             tooltipText += ingredient[translateKey];
                         }
                     }
-                    var hoverText = '<span'
-                            + ' class="tooltip-element"'
-                            + ' data-toggle="tooltip"'
-                            + ' data-placement="top"'
-                            + ' title="' + tooltipText + '">'
-                        + nickname
-                        + '</span>';
-                    line = line.replace(new RegExp(nickname, 'gi'), hoverText);
-                    break;
                 }
-            } 
+                var hoverText = '<span'
+                        + ' class="tooltip-element"'
+                        + ' data-toggle="tooltip"'
+                        + ' data-html="true"'
+                        + ' data-placement="top"'
+                        + ' title="' + tooltipText + '">'
+                    + nickname
+                    + '</span>';
+                line = line.replace(new RegExp(nickname, 'gi'), hoverText);
+            }
+        }
+        result += '<li class="instruction-line generated">' + line + '</li>';
+    }
+    return result + "</ol>";
+}
+
+class InstructionsInfo {
+    constructor(instruction) {
+        this.instruction = instruction;
+        this.ingredients = {};  // ingredient nickname -> all translations
+        this.ingredientsOrder = [];
+    }
+
+    print() {
+        console.log("=================Ingredients Order=================");
+        console.log(this.instruction);
+        console.log(this.ingredients);
+        console.log(this.ingredientsOrder);
+    }
+
+    tryToAddIngredient(ingredientTranslations) {
+        var ingredientName = ingredientTranslations["ingredient"];
+        var ingredientNicknames = this.generateIngredientNicknames(
+                ingredientName);
+
+        for (var nickname of ingredientNicknames) {
+            if (this.instruction.match(nickname) != null) {
+                if (!(nickname in this.ingredients)) {
+                    this.ingredients[nickname] = [];
+                    this.ingredientsOrder.push(nickname);
+                }
+                this.ingredients[nickname].push(ingredientTranslations);
+                return true;
+            }
+        }
+        return false;
+    }
+
+    getIngredientNicknamesAndTranslations() {
+        // TODO combine ingredients if necessary
+        var nicknamesAndTranslations = [];
+        for (var ingredient of this.ingredientsOrder) {
+            nicknamesAndTranslations.push([
+                ingredient,
+                this.ingredients[ingredient],
+            ]);
+        }
+        return nicknamesAndTranslations;
+    }
+
+    generateIngredientNicknames(ingredient) {
+        if (ingredient == null || ingredient == undefined) {
+            return [];
+        }
+        var ingredientTokens = ingredient.split(/\W+/).filter(token => token);
+        var ingredientSubstrings = [];
+        for (var start = 0; start < ingredientTokens.length; start++) {
+                var ingredient = ingredientTokens
+                    .slice(start, ingredientTokens.length)
+                    .join(" ");
+                ingredientSubstrings.push(ingredient);
+        }
+        return ingredientSubstrings;
+    }
+
+
+}
+
+function getAllInstructionsInfo(instructions, ingTranslations) {
+    var instructionsInfoLines = [];
+    var remainingIngredients = ingTranslations;
+    for (var line of instructions) {
+        var instructionsInfo = new InstructionsInfo(line);
+        var unusedIngredients = [];
+        for (var ingredient of remainingIngredients) {
+            var matchedIngredient = instructionsInfo
+                .tryToAddIngredient(ingredient);
+
             if (!matchedIngredient){
                 unusedIngredients.push(ingredient);
             }
         }
-        result += '<li class="instruction-line generated">' + line + '</li>';
         remainingIngredients = unusedIngredients;
+        instructionsInfoLines.push(instructionsInfo);
     }
-    return result + "</ol>";
+    return instructionsInfoLines;
 }
 
 // Notes: used for testing

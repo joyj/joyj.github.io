@@ -121,18 +121,42 @@ unable to parse line into sections
     us_measures    | 1/8 tsp water
 1 cup unknown ingredient
     multiplier 1.0
-    ingredient     | 1 cup unknown ingredient
+    ingredient     | unknown ingredient
     grams          | 
     mL             | 240mL unknown ingredient
     us_measures    | 1 cup unknown ingredient
+1 cup unknown ingredient
+    multiplier 2.0
+    ingredient     | unknown ingredient
+    grams          | 
+    mL             | 480mL unknown ingredient
+    us_measures    | 2 cups unknown ingredient
 100 grams unknown ingredient
     multiplier 1.0
-    ingredient     | 100 grams unknown ingredient
+    ingredient     | unknown ingredient
     grams          | 100g unknown ingredient
     mL             | 
     us_measures    |
+100 grams unknown ingredient
+    multiplier 2.0
+    ingredient     | unknown ingredient
+    grams          | 200g unknown ingredient
+    mL             | 
+    us_measures    |
+1 tbsp organic unknown ingredient
+    multiplier 1.0
+    ingredient     | unknown ingredient
+    grams          |
+    mL             | 15mL unknown ingredient
+    us_measures    | 1 tbsp unknown ingredient
 
 # difficult translations
+pinch of salt
+    multiplier 1.0
+    ingredient     | salt
+    grams          | pinch of salt
+    mL             | pinch of salt
+    us_measures    | pinch of salt
 1-2 cups water
     multiplier 1.0
     ingredient     | water

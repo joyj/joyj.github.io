@@ -78,6 +78,10 @@ var fractions_conversion = {
     "\u215E": " 7/8"
 };
 
+var stop_words = [
+    "organic",
+];
+
 var known_ingredients = {
     "water" : {
         // density
@@ -93,12 +97,36 @@ var known_ingredients = {
         "grams": 125,
         "mL": 240,
         "calories": 455,
-        "protein": 13,
-        "carbohydrates": 95,
         "fat": 1.2,
+        "carbohydrates": 95,
+        "protein": 13,
     },
     "flour" : {
         "aka": "all purpose flour",
+    },
+    "oat flour" : {
+        "grams": 30,
+        "mL": 60,
+        "calories": 120,
+        "fat": 2,
+        "carbohydrates": 22,
+        "protein": 3,
+    },
+    "coconut flour" : {
+        "grams": 14,
+        "mL": 30,
+        "calories": 60,
+        "fat": 1.5,
+        "carbohydrates": 9,
+        "protein": 3,
+    },
+    "almond flour" : {
+        "grams": 14,
+        "mL": 30,
+        "calories": 80,
+        "fat": 5,
+        "carbohydrates": 5,
+        "protein": 4,
     },
     "sugar" : {
         "grams": 200,
@@ -126,6 +154,23 @@ var known_ingredients = {
         "fat": 12,
         "carbohydrates": 0,
         "protein": 0.1,
+    },
+    "peanut butter" : {
+        "grams": 32,
+        "mL": 30,
+        "calories": 190,
+        "fat": 16,
+        "carbohydrates": 6,
+        "protein": 8,
+    },
+    "nut butter" : {
+        "aka": "peanut butter",
+    },
+    "almond butter" : {
+        "aka": "peanut butter",
+    },
+    "cashew butter" : {
+        "aka": "peanut butter",
     },
     "table salt" : {
         "grams": 18,
@@ -177,6 +222,9 @@ var known_ingredients = {
     "soy milk" : {
         "aka": "unsweetened soy milk",
     },
+    "dairy free milk" : {
+        "aka": "unsweetened soy milk",
+    },
     "coconut milk" : {
         "grams": 240,
         "mL": 240,
@@ -217,6 +265,14 @@ var known_ingredients = {
     },
     "milk" : {
         "aka": "2% milk",
+    },
+    "coconut cream" : {
+        "grams": 15,
+        "mL": 15,
+        "calories": 49,
+        "fat": 5,
+        "carbohydrates": 1,
+        "protein": 0.5,
     },
     "baking powder" : {
         "grams": 4.6,
@@ -344,6 +400,49 @@ var known_ingredients = {
     },
     "popcorn" : {
         "aka": "popping corn",
+    },
+    "cinnamon" : {
+        "grams": 7.8,
+        "mL": 15,
+        "calories": 19,
+        "fat": 0.1,
+        "carbohydrates": 6,
+        "protein": 0.3,
+    },
+    "nutmeg" : {
+        "grams": 7,
+        "mL": 15,
+        "calories": 37,
+        "fat": 2.5,
+        "carbohydrates": 3.5,
+        "protein": 0.4,
+    },
+    "agar agar" : {
+        "grams": 10,
+        "mL": 30,
+        "calories": 3,
+        "fat": 0,
+        "carbohydrates": 0.7,
+        "protein": 0.1,
+    },
+    "aquafaba" : {
+        "grams": 15,
+        "mL": 15,
+        "calories": 4,
+        "fat": 0,
+        "carbohydrates": 0,
+        "protein": 0,
+    },
+    "mrm veggie elite protein powder" : {
+        "grams": 34,
+        "mL": 70,
+        "calories": 130,
+        "fat": 1.5,
+        "carbohydrates": 5,
+        "protein": 24,
+    },
+    "protein powder" : {
+        "aka": "mrm veggie elite protein powder",
     },
     "template" : {
         "grams": 0,
