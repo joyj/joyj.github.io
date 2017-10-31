@@ -401,6 +401,44 @@ var known_ingredients = {
     "popcorn" : {
         "aka": "popping corn",
     },
+    "sesame seeds" : {
+        "grams": 9,
+        "mL": 15,
+        "calories": 52,
+        "fat": 4.5,
+        "carbohydrates": 2.1,
+        "protein": 1.6,
+    },
+    "chia seeds" : {
+        "grams": 28.4,
+        "mL": 30,
+        "calories": 138,
+        "fat": 9,
+        "carbohydrates": 12,
+        "protein": 4.7,
+    },
+    "hemp seeds" : {
+        "grams": 30,
+        "mL": 45,
+        "calories": 166,
+        "fat": 15,
+        "carbohydrates": 2.6,
+        "protein": 9.5,
+    },
+    "Medjool dates" : {
+        "grams": 7.1,
+        "mL": 12,
+        "calories": 20,
+        "fat": 0,
+        "carbohydrates": 5,
+        "protein": 0.2,
+    },
+    "medjool dates" : {
+        "aka": "Medjool dates",
+    },
+    "dates" : {
+        "aka": "Medjool dates",
+    },
     "cinnamon" : {
         "grams": 7.8,
         "mL": 15,

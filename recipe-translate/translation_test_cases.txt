@@ -149,6 +149,18 @@ unable to parse line into sections
     grams          |
     mL             | 15mL unknown ingredient
     us_measures    | 1 tbsp unknown ingredient
+1 cup packed pitted Medjool dates (12-13 large)
+    multiplier 1.0
+    ingredient     | medjool dates
+    grams          | 142g Medjool dates
+    mL             | 240mL Medjool dates
+    us_measures    | 1 cup Medjool dates
+1/4 cup chia seed
+    multiplier 1.0
+    ingredient     | chia seeds
+    grams          | 56.8g chia seeds
+    mL             | 60mL chia seeds
+    us_measures    | 1/4 cup chia seeds
 
 # difficult translations
 pinch of salt

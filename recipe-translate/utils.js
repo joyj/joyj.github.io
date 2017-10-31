@@ -199,6 +199,20 @@ class IngredientInfo {
                 if (normalizedIngredient in ingredients_database) {
                     return normalizedIngredient;
                 }
+
+                // Try adding or removing an s TODO
+                if (normalizedIngredient[normalizedIngredient.length - 1] == "s") {
+                    var removeS = normalizedIngredient.substring(
+                            0, normalizedIngredient.length - 1);
+                    if (removeS in ingredients_database) {
+                        return removeS;
+                    }
+                } else {
+                    var addS = normalizedIngredient + "s"
+                    if (addS in ingredients_database) {
+                        return addS;
+                    }
+                }
             }
         }
         return null;
