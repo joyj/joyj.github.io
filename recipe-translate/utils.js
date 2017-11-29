@@ -9,9 +9,15 @@ function triggerTranslation() {
     if (numServings == null || numServings == "") {
         numServings = 1;
     }
+    var currentAddIngredients = JSON.parse(
+        '{' + $('#add-ingredients-input').val() + '}');
+    // Add entry to database
+    known_ingredients = Object.assign(known_ingredients, currentAddIngredients);
+
+    var parsedInfo = getIngredientsAndInstructions(recipe);
 
     // important calculations
-    var ingredientInfoLines = getIngredients(recipe);
+    var ingredientInfoLines = parsedInfo[0];
     var ingredientAmts = ingredientInfoLines.map(
         function (ingredientLine) {
             return calculateAmts(ingredientLine, multiplier);
@@ -33,7 +39,7 @@ function triggerTranslation() {
     $('#nutritional-info').html(nutrition);
 
     // display instructions
-    var instructions = getInstructions(recipe);
+    var instructions = parsedInfo[1];
     var instructionInfoLines = getAllInstructionsInfo(
             instructions, ingredientTranslations);
     var instructionDisplay = constructInstructionDisplay(
@@ -58,40 +64,59 @@ function getTranslationKeys() {
     return translationKeys;
 }
 
+function addIngredientToDatabase() {
+    // inputs
+    var ingredientName = $('#new-ingredient').val().trim().toLowerCase();
+    var databaseEntry = {
+        "grams": parseFloat($('#new-grams').val()),
+        "mL": parseFloat($('#new-ml').val()),
+        "calories": parseFloat($('#new-calories').val()),
+        "fat": parseFloat($('#new-fat').val()),
+        "carbohydrates": parseFloat($('#new-carbs').val()),
+        "protein": parseFloat($('#new-protein').val()),
+    };
+
+    // Add entry to textbox at top of page
+    var currentAddIngredients = $('#add-ingredients-input').val().trim();
+    $('#add-ingredients-input').html(currentAddIngredients
+            + ',\n"' + ingredientName + '": '
+            + JSON.stringify(databaseEntry, null, 4));
+
+    // Hide modal
+    $('#addIngredientModal').modal('hide');
+
+    // Translate again to account for the newest database entries
+    // This will add all ingredients in text box to known_ingredients
+    triggerTranslation();
+}
+
 
 // Functions under here don't depend on the page state
 
 
-function getIngredients(input) {
+function getIngredientsAndInstructions(input) {
     var inputLines = input.split("\n");
     var linesOfIngredientInfo = [];
-    for (var line of inputLines) {
-        if (line.startsWith("===")) {
-            break;
-        }
-        if (line.match(/^\s*$/) == null && !line.startsWith("###")) {
-            linesOfIngredientInfo.push(new IngredientInfo(line));
-        }
-    }
-    return linesOfIngredientInfo;
-}
-
-function getInstructions(input) {
-    var inputLines = input.split("\n");
     var instructionsLines = [];
     var reachedInstructions = false;
     for (var line of inputLines) {
-        if (line.startsWith("===")) {
+        var normalizedLine = line.trim().toLowerCase();
+        if (normalizedLine.startsWith("===")
+            || normalizedLine.startsWith("instructions")
+            || normalizedLine.startsWith("procedure")
+            || normalizedLine.startsWith("directions")) {
             reachedInstructions = true;
-        } else {
-            if (reachedInstructions
-                    && line.match(/^\s*$/) == null
-                    && !line.startsWith("###")) {
+        } else if (normalizedLine.match(/^\s*$/) == null
+            && !normalizedLine.startsWith("###")
+            && !normalizedLine.startsWith("ingredients")) {
+            if (!reachedInstructions) {
+                linesOfIngredientInfo.push(new IngredientInfo(line));
+            } else {
                 instructionsLines.push(line);
             }
         }
     }
-    return instructionsLines;
+    return [linesOfIngredientInfo, instructionsLines];
 }
 
 // Note: used for testing
@@ -266,11 +291,22 @@ function getDebugMessage(ingredientLineObj) {
         ingredient = parsedIngredient + " --> " + ingredient;
     }
     var ingrInfo = ingredientLineObj.databaseIngredientInfo;
+    if (ingrInfo == null) {
+        var ingredientAfterUnit = ingredientLineObj.parsedEverythingAfterUnit;
+        ingrInfo = '<button type="button"'
+            + ' class="btn btn-primary"'
+            + ' data-toggle="modal"'
+            + ' data-ingredient="' + ingredientAfterUnit + '"'
+            + ' data-target="#addIngredientModal">'
+                + ' Add ingredient to database'
+            + ' </button>';
+    } else {
+        ingrInfo = JSON.stringify(ingrInfo, null, 4);
+    }
     return "amount: " + amt
         + " <br/> unit: " + unit
         + " <br/> ingredient: " + ingredient
-        + " <br/> database ingredient entry: "
-            + JSON.stringify(ingrInfo, null, 4);
+        + " <br/> database ingredient entry: " + ingrInfo;
 }
 
 // Note: used for testing

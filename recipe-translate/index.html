@@ -35,30 +35,46 @@
     </div>
     <div class="container">
         <div class="row">
+            <p class="large-text">How to Use</p>
+            <ul>
+                <li>Paste recipe in input box</li>
+                <li>Lines that start with ### will be ignored</li>
+                <li>Separate ingredients from instructions using ===</li>
+                <li>Edit the ingredients to your substitutions to get more
+                    accurate translation and nutrition info (e.g. edit 2% milk to soy milk).</li>
+                <li>Add ingredient entries in the second big text box if they
+                    don't already exist in default ingredient database.</li>
+            </ul>
+            <p>I recommend using a scale (TODO link) to measure ingredients since it
+            is more accurate and saves time washing the dishes! [TODO Read
+            about my kitchen setup for more details.]
+            </p>
+        </div>
+        <div class="row">
             <div class="col-md-8">
                 <textarea class="form-control" id='recipe-input' rows=10
-                          placeholder="Paste ingredients here"></textarea>
+                          placeholder="Paste recipe here"></textarea>
             </div>
             <div class="col-md-4">
-                <p class="large-text">Advice</p>
-                <ul>
-                    <li>Paste recipe in input box</li>
-                    <li>Lines that start with ### will be ignored</li>
-                    <li>Separate ingredients from instructions using ===</li>
-                    <li>Edit the ingredients to your substitutions to get more
-                        accurate translation and nutrition info (e.g. edit 2% milk to soy milk).</li>
-                </ul>
-                <p>I recommend using a scale (TODO link) to measure ingredients since it
-                is more accurate and saves time washing the dishes! [TODO Read
-                about my kitchen setup for more details.]
-                </p>
+                <textarea class="form-control" id='add-ingredients-input' rows=10
+                          placeholder="Paste ingredients to add to database here">
+"sample ingredient to add to database" : {
+    "grams": 0,
+    "mL": 0,
+    "calories": 0,
+    "fat": 0,
+    "carbohydrates": 0,
+    "protein": 0
+}
+                </textarea>
             </div>
         </div>
         <div class="control-panel padding">
             <span>Multipler:</span>
             <input class="span2" id="multiplier-input" size="8" type="text"
                                                                 placeholder="1.0">
-            <span>Servings:</span>
+            <span>Servings per recipe:</span>
+
             <input class="span2" id="servings-input" size="8" type="text"
                                                                 placeholder="1">
             <button class="btn btn-default" id="translate-btn"
@@ -155,6 +171,80 @@
             <p class="large-text">Instructions</p>
         </div>
     </div>
+    <div class="modal fade" id="addIngredientModal" tabindex="-1" role="dialog"
+        aria-labelledby="addIngredientModal" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Add Ingredient to Database</h5>
+                    <button type="button"
+                        class="close"
+                        data-dismiss="modal"
+                        aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div>Ingredient Name <input class="span2"
+                        id="new-ingredient" size="20" type="text"
+                        placeholder="Type ingredient name here"></div>
+                    <p>
+                        The following fields should all be represented in terms
+                        of each other. For example, 100g of water is 100mL. 200g is
+                        200mL. For a given ingredient 100g might be 50 calories
+                        and 2 grams of fat, and 200g would be 100 calories with
+                        4 grams of fat.
+                    </p>
+                    <p>
+                        ***Note: The ingredients added will only remain during
+                        this session. If you reload this page you will loose all
+                        your input. In order to avoid this, copy the generated
+                        ingredients to add from the top of the page.
+                    </p>
+                    <div>
+                        <span>grams</span>
+                        <input class="span2" id="new-grams" size="8" type="text"
+                                                                            placeholder="0">
+                    </div>
+                    <div>
+                        <span>volume in mL (1 tsp = 5 mL, 1 tbsp = 15 mL, 1 cup = 240 mL)</span>
+                        <input class="span2" id="new-ml" size="8" type="text"
+                                                                            placeholder="0">
+                    </div>
+                    <div>
+                        <span>calories</span>
+                        <input class="span2" id="new-calories" size="8" type="text"
+                                                                            placeholder="0">
+                    </div>
+                    <div>
+                        <span>fat (g)</span>
+                        <input class="span2" id="new-fat" size="8" type="text"
+                                                                            placeholder="0">
+                    </div>
+                    <div>
+                        <span>carbohydrates (g)</span>
+                        <input class="span2" id="new-carbs" size="8" type="text"
+                                                                            placeholder="0">
+                    </div>
+                    <div>
+                        <span>protein (g)</span>
+                        <input class="span2" id="new-protein" size="8" type="text"
+                                                                            placeholder="0">
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button"
+                            class="btn btn-primary"
+                            id="add-ingredient-btn">
+                        Save changes</button>
+                    <button type="button"
+                            class="btn btn-secondary"
+                            data-dismiss="modal">
+                        Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
   </body>
   <script src="ingredients_database.js"></script>
   <script src="utils.js"></script>
@@ -182,8 +272,20 @@
         triggerTranslation();
     });
 
+    // Activate tool-tips
     $(function () {
           $('[data-toggle="tooltip"]').tooltip()
     })
+
+    // Populate modal based on which button triggered it
+    $('#addIngredientModal').on('show.bs.modal', function (event) {
+        var button = $(event.relatedTarget); // Button that triggered the modal
+        var ingredientName = button.data('ingredient');  // Extract text from data-ingredient
+        var modal = $(this);
+        modal.find('.modal-body #new-ingredient').val(ingredientName);
+    })
+
+    // Add user defined ingredient to database for this session
+    $('#add-ingredient-btn').click(addIngredientToDatabase);
   </script>
 </html>

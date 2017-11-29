@@ -136,6 +136,12 @@ var known_ingredients = {
         "carbohydrates": 200,
         "protein": 0,
     },
+    "granulated sweetener" : {
+        "aka": "sugar",
+    },
+    "sweetener" : {
+        "aka": "sugar",
+    },
     "packed brown sugar" : {
         "grams": 220,
         "mL": 240,
@@ -333,6 +339,9 @@ var known_ingredients = {
     "agave" : {
         "aka": "agave syrup",
     },
+    "liquid sweetener" : {
+        "aka": "agave syrup",
+    },
     "honey" : {
         "grams": 21,
         "mL": 15,
@@ -340,6 +349,50 @@ var known_ingredients = {
         "fat": 0,
         "carbohydrates": 17,
         "protein": 0.1,
+    },
+    "cornstarch" : {
+        "grams": 128,
+        "mL": 240,
+        "calories": 488,
+        "fat": 0.1,
+        "carbohydrates": 117,
+        "protein": 0.3,
+    },
+    "corn starch" : {
+        "aka": "cornstarch",
+    },
+    "tapioca starch" : {
+        "grams": 30,
+        "mL": 60,
+        "calories": 100,
+        "fat": 0,
+        "carbohydrates": 26,
+        "protein": 0,
+    },
+    "tapioca flour" : {
+        "aka": "tapioca starch",
+    },
+    "potato starch" : {
+        "grams": 160,
+        "mL": 240,
+        "calories": 571,
+        "fat": 0.5,
+        "carbohydrates": 133,
+        "protein": 11,
+    },
+    "arrowroot starch" : {
+        "grams": 32,
+        "mL": 60,
+        "calories": 110,
+        "fat": 0,
+        "carbohydrates": 128,
+        "protein": 0,
+    },
+    "arrowroot powder" : {
+        "aka": "arrowroot starch",
+    },
+    "arrowroot flour" : {
+        "aka": "arrowroot starch",
     },
     "apple cider vinegar" : {
         "grams": 14.9,
