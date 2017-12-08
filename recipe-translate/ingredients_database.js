@@ -478,6 +478,9 @@ var known_ingredients = {
         "carbohydrates": 3,
         "protein": 1.9,
     },
+    "flaxseed" : {
+        "aka": "flax seeds",
+    },
     "ground flax seeds" : {
         "grams": 7,
         "mL": 15,
@@ -486,10 +489,10 @@ var known_ingredients = {
         "carbohydrates": 2,
         "protein": 1.3,
     },
-    "flaxseed" : {
-        "aka": "flax seeds",
-    },
     "ground flaxseed" : {
+        "aka": "ground flax seeds",
+    },
+    "ground flax" : {
         "aka": "ground flax seeds",
     },
     "hemp seeds" : {
