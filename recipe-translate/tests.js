@@ -6,6 +6,8 @@ function runTests() {
     runNutritionTests();
     console.log("-------Instructions tests");
     runInstructionsTests();
+    console.log("-------Adding to Database tests");
+    runAddDatabaseEntryTests();
     console.log("-------Finished running tests-------");
 }
 
@@ -275,3 +277,11 @@ function runInstructionTestCase(
     });
 }
 
+function runAddDatabaseEntryTests() {
+    // TODO
+    // fields that aren't filled in are 0
+    // Added correctly to box
+    // reflected correctly in ingredients table
+    // - Adding an ingredient that has punctuation should still be recognizable
+    // - If user doesn't enter grams, it shouldn't break everything (no NaN)
+}

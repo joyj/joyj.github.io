@@ -60,7 +60,8 @@ function getTranslationKeys() {
 
 function addIngredientToDatabase() {
     // inputs
-    var ingredientName = $('#new-ingredient').val().trim().toLowerCase();
+    var ingredientName = $('#new-ingredient').val()
+        .toLowerCase().split(/\W+/).join(" ");  // normalize
     var databaseEntry = {
         "grams": parseFloat($('#new-grams').val()) || 0,
         "mL": parseFloat($('#new-ml').val()) || 0,
@@ -178,7 +179,7 @@ class IngredientInfo {
                 this.parsedEverythingAfterUnit = tokens
                     .filter(token => !stop_words.includes(token))
                     .slice(i + 1, tokens.length)
-                    .join(" ");
+                    .join(" ");  // TODO maybe split(/\W+/) here instead of other places
                 return this.parsedEverythingAfterUnit;
             }
         }
@@ -338,12 +339,20 @@ function calculateAmts(ingredientLineObj, multiplier) {
     if (mL != null) {
         amtObj["mL"] = mL;
     }
-    if (grams != null && ingrInfo != null) {
+    if (grams != null && ingrInfo != null && ingrInfo["grams"] > 0) {
         amtObj["calories"] = grams * ingrInfo["calories"] / ingrInfo["grams"];
         amtObj["fat"] = grams * ingrInfo["fat"] / ingrInfo["grams"];
         amtObj["carbohydrates"] = (
                 grams * ingrInfo["carbohydrates"] / ingrInfo["grams"]);
         amtObj["protein"] = grams * ingrInfo["protein"] / ingrInfo["grams"];
+    } else if (mL != null && ingrInfo != null && ingrInfo["mL"] > 0) {
+        // This case shouldn't really be run, but is possible with user entered
+        // data if they don't enter grams for a database entry but do enter mL
+        amtObj["calories"] = mL * ingrInfo["calories"] / ingrInfo["mL"];
+        amtObj["fat"] = mL * ingrInfo["fat"] / ingrInfo["mL"];
+        amtObj["carbohydrates"] = (
+                mL * ingrInfo["carbohydrates"] / ingrInfo["mL"]);
+        amtObj["protein"] = mL * ingrInfo["protein"] / ingrInfo["mL"];
     }
     return amtObj;
 }
