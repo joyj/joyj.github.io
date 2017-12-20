@@ -1,14 +1,8 @@
 function triggerTranslation() {
     // inputs
     var recipe = $('#recipe-input').val();
-    var multiplier = $('#multiplier-input').val();
-    var numServings = $('#servings-input').val();
-    if (multiplier == null || multiplier == "") {
-        multiplier = 1;
-    }
-    if (numServings == null || numServings == "") {
-        numServings = 1;
-    }
+    var multiplier = $('#multiplier-input').val() || 1;
+    var numServings = $('#servings-input').val() || 1;
     var currentAddIngredients = JSON.parse(
         '{' + $('#add-ingredients-input').val() + '}');
     // Add entry to database
@@ -68,12 +62,12 @@ function addIngredientToDatabase() {
     // inputs
     var ingredientName = $('#new-ingredient').val().trim().toLowerCase();
     var databaseEntry = {
-        "grams": parseFloat($('#new-grams').val()),
-        "mL": parseFloat($('#new-ml').val()),
-        "calories": parseFloat($('#new-calories').val()),
-        "fat": parseFloat($('#new-fat').val()),
-        "carbohydrates": parseFloat($('#new-carbs').val()),
-        "protein": parseFloat($('#new-protein').val()),
+        "grams": parseFloat($('#new-grams').val()) || 0,
+        "mL": parseFloat($('#new-ml').val()) || 0,
+        "calories": parseFloat($('#new-calories').val()) || 0,
+        "fat": parseFloat($('#new-fat').val()) || 0,
+        "carbohydrates": parseFloat($('#new-carbs').val()) || 0,
+        "protein": parseFloat($('#new-protein').val()) || 0,
     };
 
     // Add entry to textbox at top of page
