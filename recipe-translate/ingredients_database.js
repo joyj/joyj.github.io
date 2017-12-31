@@ -128,6 +128,33 @@ var known_ingredients = {
         "carbohydrates": 5,
         "protein": 4,
     },
+    "masa harina": {
+        "grams": 29,
+        "mL": 60,
+        "calories": 100,
+        "fat": 1,
+        "carbohydrates": 21,
+        "protein": 2
+    },
+    "corn kernels": {
+        "grams": 90,
+        "mL": 160,
+        "calories": 80,
+        "fat": 0.5,
+        "carbohydrates": 19,
+        "protein": 3
+    },
+    "cornmeal": {
+        "grams": 27,
+        "mL": 45,
+        "calories": 90,
+        "fat": 0.5,
+        "carbohydrates": 21,
+        "protein": 2
+    },
+    "corn meal" : {
+        "aka": "cornmeal",
+    },
     "sugar" : {
         "grams": 200,
         "mL": 240,
