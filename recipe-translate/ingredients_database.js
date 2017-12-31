@@ -128,6 +128,17 @@ var known_ingredients = {
         "carbohydrates": 5,
         "protein": 4,
     },
+    "chickpea flour": {
+        "grams": 30,
+        "mL": 60,
+        "calories": 110,
+        "fat": 2,
+        "carbohydrates": 18,
+        "protein": 6
+    },
+    "garbanzo bean flour" : {
+        "aka": "chickpea flour",
+    },
     "masa harina": {
         "grams": 29,
         "mL": 60,
@@ -420,6 +431,14 @@ var known_ingredients = {
     },
     "arrowroot flour" : {
         "aka": "arrowroot starch",
+    },
+    "nutritional yeast": {
+        "grams": 5,
+        "mL": 15,
+        "calories": 20,
+        "fat": 0,
+        "carbohydrates": 2,
+        "protein": 3
     },
     "apple cider vinegar" : {
         "grams": 14.9,
