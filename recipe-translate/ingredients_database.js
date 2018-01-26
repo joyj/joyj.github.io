@@ -4,9 +4,11 @@ var volume_conversions = {
     "mL": 1,
     "teaspoon": 5,
     "tsp": 5,
+    "tsp.": 5,
     "t": 5,
     "tablespoon": 15,
     "tbsp": 15,
+    "tbsp.": 15,
     "T": 15,
     "fl oz" : 30,
     "fl. oz." : 30,
@@ -191,6 +193,17 @@ var known_ingredients = {
     "brown sugar" : {
         "aka": "packed brown sugar",
     },
+    "powdered sugar" : {
+        "grams": 8,
+        "mL": 15,
+        "calories": 31,
+        "fat": 0,
+        "carbohydrates": 8,
+        "protein": 0,
+    },
+    "powdered sweetener" : {
+        "aka": "powdered sugar",
+    },
     "butter" : {
         "grams": 14.2,
         "mL": 15,
@@ -358,6 +371,9 @@ var known_ingredients = {
         "carbohydrates": 3.1,
         "protein": 1.1,
     },
+    "cocoa" : {
+        "aka": "cocoa powder",
+    },
     "maple syrup" : {
         "grams": 20,
         "mL": 15,
@@ -447,6 +463,9 @@ var known_ingredients = {
         "fat": 0,
         "carbohydrates": 0.1,
         "protein": 0,
+    },
+    "vinegar" : {
+        "aka": "apple cider vinegar",
     },
     "dry rolled oats" : {
         "grams": 40,
