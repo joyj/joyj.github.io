@@ -279,7 +279,13 @@ var known_ingredients = {
     "soy milk" : {
         "aka": "unsweetened soy milk",
     },
+    "soymilk" : {
+        "aka": "unsweetened soy milk",
+    },
     "dairy free milk" : {
+        "aka": "unsweetened soy milk",
+    },
+    "non dairy milk" : {
         "aka": "unsweetened soy milk",
     },
     "coconut milk" : {
