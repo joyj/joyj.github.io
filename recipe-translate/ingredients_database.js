@@ -245,6 +245,14 @@ var known_ingredients = {
         "carbohydrates": 6,
         "protein": 8,
     },
+    "tahini" : {
+        "grams": 15,
+        "mL": 15,
+        "calories": 89,
+        "fat": 8,
+        "carbohydrates": 3.2,
+        "protein": 2.6,
+    },
     "nut butter" : {
         "aka": "peanut butter",
     },
@@ -311,6 +319,9 @@ var known_ingredients = {
         "aka": "unsweetened soy milk",
     },
     "non dairy milk" : {
+        "aka": "unsweetened soy milk",
+    },
+    "plant-based milk" : {
         "aka": "unsweetened soy milk",
     },
     "coconut milk" : {
@@ -533,6 +544,14 @@ var known_ingredients = {
         "carbohydrates": 10,
         "protein": 1,
     },
+    "dark chocolate" : {
+        "grams": 38,
+        "mL": 30,  // Not sure about this
+        "calories": 220,
+        "fat": 12,
+        "carbohydrates": 23,
+        "protein": 2,
+    },
     "unsweetened applesauce" : {
         "grams": 246,
         "mL": 240,
@@ -597,6 +616,9 @@ var known_ingredients = {
         "aka": "ground flax seeds",
     },
     "ground flax" : {
+        "aka": "ground flax seeds",
+    },
+    "flaxseed meal" : {
         "aka": "ground flax seeds",
     },
     "hemp seeds" : {
@@ -717,6 +739,12 @@ var known_ingredients = {
         "carbohydrates": 0.7,
         "protein": 0.1,
     },
+    "agar powder" : {
+        "aka": "agar agar",
+    },
+    "agar" : {
+        "aka": "agar agar",
+    },
     "aquafaba" : {
         "grams": 15,
         "mL": 15,
@@ -724,6 +752,14 @@ var known_ingredients = {
         "fat": 0,
         "carbohydrates": 0,
         "protein": 0,
+    },
+    "active dry yeast": {
+        "grams": 7,
+        "mL": 11.25,
+        "calories": 21,
+        "fat": 0.32,
+        "carbohydrates": 2.67,
+        "protein": 2.68,
     },
     "mrm veggie elite protein powder" : {
         "grams": 34,
