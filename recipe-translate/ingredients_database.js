@@ -116,7 +116,7 @@ var known_ingredients = {
     },
     "glutinous rice flour" : {
         "grams": 30,
-        "mL": 60,
+        "mL": 80,
         "calories": 110,
         "fat": 0,
         "carbohydrates": 24,
@@ -125,10 +125,13 @@ var known_ingredients = {
     "sweet rice flour" : {
         "aka": "glutinous rice flour",
     },
-    "Mochiko" : {
+    "mochiko" : {
         "aka": "glutinous rice flour",
     },
-    "Shiratamako" : {
+    "mochiko flour" : {
+        "aka": "glutinous rice flour",
+    },
+    "shiratamako" : {
         "aka": "glutinous rice flour",
     },
     "oat flour" : {

@@ -161,6 +161,12 @@ unable to parse line into sections
     grams          | 56.8g chia seeds
     mL             | 60mL chia seeds
     us_measures    | 1/4 cup chia seeds
+1 1/4 cup Mochiko flour (capitalization and ingredient aka)
+    multiplier 1.0
+    ingredient     | mochiko flour
+    grams          | 112.5g glutinous rice flour
+    mL             | 300mL glutinous rice flour
+    us_measures    | 1 1/4 cup glutinous rice flour
 
 # difficult translations
 pinch of salt
